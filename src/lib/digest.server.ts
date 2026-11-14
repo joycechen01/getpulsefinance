@@ -22,7 +22,10 @@ export async function buildDigest(ticker:string):Promise<EarningsDigest> {
   let reviewComplete=false;
   try{const r=await ensureSignals(match.cik,match.name,fin);reviewComplete=r.analyzed;}catch(e){console.error("Digest developments unavailable",e);}
   const all=await signalViews(supabaseAdmin,[match.cik],new Map([[match.cik,match.ticker]]));
-  return {ticker:match.ticker,name:match.name,filing,...digestMetrics(fin,filing),reviewComplete,developments:all.filter(s=>s.accession===f.accession&&s.citations.length>0)};
+  const {transcriptQuarter}=await import("./phase5");
+  const quarter=fin?transcriptQuarter(fin,f.report_date):null;
+  const {data:call}=quarter?await supabaseAdmin.from("earnings_calls").select("data").eq("ticker",match.ticker).eq("quarter",quarter).eq("status","ready").maybeSingle():{data:null};
+  return {ticker:match.ticker,name:match.name,filing,...digestMetrics(fin,filing),reviewComplete,developments:all.filter(s=>s.accession===f.accession&&s.citations.length>0),...(call?.data?{call:call.data as unknown as import("./phase5").CallReview}:{})};
 }
 
 export async function gmail(path:string,method="GET",body?:object) {

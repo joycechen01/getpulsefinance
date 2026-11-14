@@ -16,6 +16,7 @@ import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/h
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as CompanyTickerRouteImport } from './routes/company.$ticker'
+import { Route as ApiPublicJobsMaterialEventsRouteImport } from './routes/api/public/jobs/material-events'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -51,6 +52,12 @@ const CompanyTickerRoute = CompanyTickerRouteImport.update({
   path: '/company/$ticker',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicJobsMaterialEventsRoute =
+  ApiPublicJobsMaterialEventsRouteImport.update({
+    id: '/api/public/jobs/material-events',
+    path: '/api/public/jobs/material-events',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/company/$ticker': typeof CompanyTickerRoute
+  '/api/public/jobs/material-events': typeof ApiPublicJobsMaterialEventsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -67,6 +75,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/company/$ticker': typeof CompanyTickerRoute
+  '/api/public/jobs/material-events': typeof ApiPublicJobsMaterialEventsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,13 +86,27 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/company/$ticker': typeof CompanyTickerRoute
+  '/api/public/jobs/material-events': typeof ApiPublicJobsMaterialEventsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/home' | '/onboarding' | '/settings' | '/company/$ticker'
+    | '/'
+    | '/auth'
+    | '/home'
+    | '/onboarding'
+    | '/settings'
+    | '/company/$ticker'
+    | '/api/public/jobs/material-events'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/home' | '/onboarding' | '/settings' | '/company/$ticker'
+  to:
+    | '/'
+    | '/auth'
+    | '/home'
+    | '/onboarding'
+    | '/settings'
+    | '/company/$ticker'
+    | '/api/public/jobs/material-events'
   id:
     | '__root__'
     | '/'
@@ -93,6 +116,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/settings'
     | '/company/$ticker'
+    | '/api/public/jobs/material-events'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -100,6 +124,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CompanyTickerRoute: typeof CompanyTickerRoute
+  ApiPublicJobsMaterialEventsRoute: typeof ApiPublicJobsMaterialEventsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -153,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyTickerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/jobs/material-events': {
+      id: '/api/public/jobs/material-events'
+      path: '/api/public/jobs/material-events'
+      fullPath: '/api/public/jobs/material-events'
+      preLoaderRoute: typeof ApiPublicJobsMaterialEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -176,6 +208,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CompanyTickerRoute: CompanyTickerRoute,
+  ApiPublicJobsMaterialEventsRoute: ApiPublicJobsMaterialEventsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

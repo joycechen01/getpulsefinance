@@ -100,6 +100,113 @@ export type Database = {
           },
         ]
       }
+      earnings_calls: {
+        Row: {
+          data: Json | null
+          error: string | null
+          lease_until: string | null
+          quarter: string
+          status: string
+          ticker: string
+        }
+        Insert: {
+          data?: Json | null
+          error?: string | null
+          lease_until?: string | null
+          quarter: string
+          status?: string
+          ticker: string
+        }
+        Update: {
+          data?: Json | null
+          error?: string | null
+          lease_until?: string | null
+          quarter?: string
+          status?: string
+          ticker?: string
+        }
+        Relationships: []
+      }
+      event_deliveries: {
+        Row: {
+          accession: string
+          created_at: string
+          error: string | null
+          gmail_id: string | null
+          recipient: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          accession: string
+          created_at?: string
+          error?: string | null
+          gmail_id?: string | null
+          recipient: string
+          status: string
+          user_id: string
+        }
+        Update: {
+          accession?: string
+          created_at?: string
+          error?: string | null
+          gmail_id?: string | null
+          recipient?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_deliveries_accession_fkey"
+            columns: ["accession"]
+            isOneToOne: false
+            referencedRelation: "filings"
+            referencedColumns: ["accession"]
+          },
+          {
+            foreignKeyName: "event_deliveries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_monitor: {
+        Row: {
+          cursor: number
+          enabled_since: string
+          last_checked_at: string | null
+          lease_until: string | null
+          paused_reason: string | null
+          user_id: string
+        }
+        Insert: {
+          cursor?: number
+          enabled_since?: string
+          last_checked_at?: string | null
+          lease_until?: string | null
+          paused_reason?: string | null
+          user_id: string
+        }
+        Update: {
+          cursor?: number
+          enabled_since?: string
+          last_checked_at?: string | null
+          lease_until?: string | null
+          paused_reason?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_monitor_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       filing_extractions: {
         Row: {
           accession: string
@@ -273,6 +380,35 @@ export type Database = {
         }
         Relationships: []
       }
+      material_events: {
+        Row: {
+          accession: string
+          created_at: string
+          data: Json
+          ticker: string
+        }
+        Insert: {
+          accession: string
+          created_at?: string
+          data: Json
+          ticker: string
+        }
+        Update: {
+          accession?: string
+          created_at?: string
+          data?: Json
+          ticker?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "material_events_accession_fkey"
+            columns: ["accession"]
+            isOneToOne: true
+            referencedRelation: "filings"
+            referencedColumns: ["accession"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           audio_digest_enabled: boolean
@@ -280,6 +416,7 @@ export type Database = {
           delivery_email: string | null
           digest_email_enabled: boolean
           id: string
+          material_event_email_enabled: boolean
           onboarded: boolean
           updated_at: string
         }
@@ -289,6 +426,7 @@ export type Database = {
           delivery_email?: string | null
           digest_email_enabled?: boolean
           id: string
+          material_event_email_enabled?: boolean
           onboarded?: boolean
           updated_at?: string
         }
@@ -298,6 +436,7 @@ export type Database = {
           delivery_email?: string | null
           digest_email_enabled?: boolean
           id?: string
+          material_event_email_enabled?: boolean
           onboarded?: boolean
           updated_at?: string
         }

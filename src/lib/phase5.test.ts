@@ -1,0 +1,10 @@
+import {expect,it} from "vitest";
+import {eventItems,executiveEvent,callPassages,validateCallSummary,transcriptQuarter,eventEmail} from "./phase5";
+it("only the eight selected 8-K items are eligible",()=>{expect(eventItems("5.02,4.01,4.02,2.05,2.06,1.05,2.01,1.03")).toEqual(["5.02","4.01","4.02","2.05","2.06","1.05","2.01","1.03"]);});
+it("routine and earnings release items never email",()=>{expect(eventItems("7.01,8.01,5.07,9.01,2.02")).toEqual([]);});
+it("5.02 requires CEO or CFO appointment or departure",()=>{expect(executiveEvent("The chief executive officer resigned.")).toBe(true);expect(executiveEvent("A director resigned.")).toBe(false);expect(executiveEvent("The CFO received compensation.")).toBe(false);});
+it("rejects mismatched fiscal-quarter transcripts",()=>{expect(()=>callPassages({symbol:"NVDA",quarter:"2026Q1",transcript:[]},"NVDA","2027Q2")).toThrow("does not match");});
+it("records speakers and separates analyst questions",()=>{const p=callPassages({symbol:"IBM",quarter:"2024Q1",transcript:[{speaker:"CEO",title:"CEO",content:"Our outlook."},{speaker:"Jane",title:"Analyst",content:"What drives demand?"}]},"IBM","2024Q1");expect(p[1]).toEqual({id:"T2",speaker:"Jane",role:"Analyst",section:"qa",text:"What drives demand?"});});
+it("filing versus call claims require evidence from both sources",()=>{expect(()=>validateCallSummary({outlook:[],topics:[],differences:[{text:"different",refs:["T1","T2"]}],uncertain:"unknown"},[{id:"T1",speaker:"a",role:"CEO",section:"remarks",text:"x"},{id:"T2",speaker:"b",role:"CFO",section:"remarks",text:"y"}],[])).toThrow("both transcript");});
+it("uses company fiscal year rather than calendar filing year",()=>{expect(transcriptQuarter({currency:"USD",fyEndMonth:1,tags:{},annual:[],quarterly:[{key:"q",label:"Q2 FY27",fiscalYear:2027,quarter:2,end:"2026-07-26",v:{},derived:[],calculated:[]}]},"2026-07-26")).toBe("2027Q2");});
+it("event email recipients reject header injection",()=>{expect(()=>eventEmail({accession:"a",ticker:"X",filed:"2026-11-14",url:"https://www.sec.gov",items:["4.01"],passages:[],prior:[]},"x@y.com\r\nBcc: a@b.com")).toThrow();});

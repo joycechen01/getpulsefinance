@@ -9,6 +9,7 @@ import { CompanySearch } from "@/components/CompanySearch";
 import { DevelopmentsPanel } from "@/components/research/DevelopmentsPanel";
 import { SharedRisksPanel } from "@/components/research/SharedRisksPanel";
 import { EarningsDigestPanel } from "@/components/research/EarningsDigestPanel";
+import { MaterialEventsPanel } from "@/components/research/MaterialEventsPanel";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { InfoTip } from "@/components/InfoTip";
 import { Sparkline } from "@/components/Sparkline";
@@ -85,6 +86,7 @@ function Home() {
       </div>
 
       <EarningsDigestPanel tickers={tickers} />
+      <MaterialEventsPanel tickers={tickers} />
 
       <HoldingsTable rows={data.holdings} quotes={quotes.data} quotesLoading={quotes.isLoading} />
       <SharedRisksPanel tickers={tickers} />
