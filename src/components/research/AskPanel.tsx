@@ -5,7 +5,7 @@ import { useState } from "react";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { askCompany, type AnswerResult } from "@/lib/analysis.functions";
+import { askCompany, askPortfolio, type AnswerResult } from "@/lib/analysis.functions";
 
 import { CitationItem } from "./SignalCard";
 
@@ -16,8 +16,15 @@ const SUGGESTIONS = [
   "Are there any legal or regulatory investigations?",
 ];
 
-export function AskPanel({ ticker, name }: { ticker: string; name: string }) {
-  const ask = useServerFn(askCompany);
+const PORTFOLIO_SUGGESTIONS = [
+  "Which of my companies mention supply chain risk?",
+  "What do my holdings say about AI demand?",
+  "Do any of my companies disclose legal investigations?",
+];
+
+export function AskPanel({ ticker, name }: { ticker?: string; name: string }) {
+  const askOne = useServerFn(askCompany);
+  const askAll = useServerFn(askPortfolio);
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
   const [res, setRes] = useState<(AnswerResult & { question: string }) | null>(null);
@@ -27,7 +34,7 @@ export function AskPanel({ ticker, name }: { ticker: string; name: string }) {
     setQ(question);
     setBusy(true);
     try {
-      const r = await ask({ data: { ticker, question } });
+      const r = ticker ? await askOne({ data: { ticker, question } }) : await askAll({ data: { question } });
       setRes({ ...r, question });
     } catch {
       setRes({ ok: false, error: "The answer couldn’t be prepared. Please try again.", question });
@@ -45,11 +52,11 @@ export function AskPanel({ ticker, name }: { ticker: string; name: string }) {
           void run(q);
         }}
       >
-        <label htmlFor="ask" className="eyebrow block">
-          Ask about {name}’s filings
+        <label htmlFor={ticker ? "ask" : "ask-portfolio"} className="eyebrow block">
+          {ticker ? `Ask about ${name}’s filings` : `Ask across ${name}`}
         </label>
         <Textarea
-          id="ask"
+          id={ticker ? "ask" : "ask-portfolio"}
           value={q}
           onChange={(e) => setQ(e.target.value)}
           maxLength={500}
@@ -63,7 +70,7 @@ export function AskPanel({ ticker, name }: { ticker: string; name: string }) {
           }}
         />
         <div className="flex flex-wrap items-center gap-2">
-          {SUGGESTIONS.map((s) => (
+          {(ticker ? SUGGESTIONS : PORTFOLIO_SUGGESTIONS).map((s) => (
             <button
               key={s}
               type="button"
@@ -118,7 +125,7 @@ export function AskPanel({ ticker, name }: { ticker: string; name: string }) {
                   <div className="eyebrow mb-2">Sources</div>
                   <ul className="space-y-2">
                     {res.citations.map((c) => (
-                      <CitationItem key={c.ref} c={c} label={c.ref} />
+                      <CitationItem key={c.ref} c={c} label={(c as { ticker?: string }).ticker ? `${c.ref} · ${(c as { ticker?: string }).ticker}` : c.ref} />
                     ))}
                   </ul>
                 </div>

@@ -246,3 +246,64 @@ ${list.map((c) => `[${c.ref}] ${c.form} filed ${c.filing_date}, section ${c.sect
       return { ok: false, error: "The answer couldn’t be prepared. Please try again." };
     }
   });
+
+export const askPortfolio = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ question: z.string().trim().min(3).max(500) }).parse(d))
+  .handler(async ({ data, context }): Promise<AnswerResult> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    try {
+      const { data: holdings, error: hErr } = await context.supabase.from("holdings").select("ticker").order("created_at");
+      if (hErr) throw hErr;
+      const tickers = [...new Set((holdings ?? []).map((h) => h.ticker))].slice(0, 8);
+      if (!tickers.length) return { ok: true, answer: "Add holdings to your portfolio to ask questions across them.", uncertain: "No holdings were found.", answerable: false, citations: [] };
+      const { listFilings, ensureExtracted } = await import("./analysis.server");
+      const list: (Citation & { ref: string })[] = [];
+      const names: string[] = [];
+      for (const t of tickers) {
+        const match = await resolve(t);
+        if (!match) continue;
+        names.push(`${match.name} (${match.ticker})`);
+        try {
+          const filings = await listFilings(match.cik);
+          for (const f of [filings.find((x) => x.form === "10-K"), filings.find((x) => x.form === "10-Q")]) if (f) await ensureExtracted(f);
+          const { data: hits, error } = await supabaseAdmin.rpc("search_passages", { _cik: match.cik, _q: data.question, _limit: 4 });
+          if (error) throw error;
+          const cites = await citationsFor(supabaseAdmin, (hits ?? []).map((h) => h.id));
+          for (const h of hits ?? []) { const c = cites.get(h.id); if (c) list.push({ ...c, ref: `S${list.length + 1}`, ticker: match.ticker } as Citation & { ref: string }); }
+        } catch (e) { console.error("Portfolio ask skipped", t, e); }
+      }
+      if (!list.length) return { ok: true, answer: "I couldn’t find passages in your holdings’ recent filings that address this question.", uncertain: "Only risk factors, MD&A, competition and 8-K text are indexed.", answerable: false, citations: [] };
+      const tick = (c: Citation & { ref: string }) => (c as unknown as { ticker: string }).ticker;
+      const { aiObject } = await import("./ai.server");
+      const out = await aiObject(
+        AnswerSchema,
+        `You answer questions about an investor's portfolio companies using ONLY the SEC filing excerpts provided.
+- Name the company (ticker) for every point and cite excerpt ids in square brackets, e.g. [S2]. Never cite ids that weren't provided.
+- Quote figures exactly; never compute or invent numbers; no outside knowledge.
+- If excerpts don't answer the question for a company, say so for that company. Set answerable false if none answer.
+- Never give buy, sell or hold advice, rankings, price targets or predictions.
+- Under 220 words, plain text, no markdown; use short lines starting with "• " per company.
+- uncertain: one sentence on what remains uncertain or undisclosed.
+- cited: the excerpt ids you used.`,
+        `Holdings: ${names.join(", ")}
+Question: ${data.question}
+
+Excerpts:
+${list.map((c) => `[${c.ref}] ${tick(c)} ${c.form} filed ${c.filing_date}, section ${c.section}: ${c.text.slice(0, 1200)}`).join("\n\n")}`,
+      );
+      const used = new Set([...out.cited, ...(out.answer.match(/S\d+/g) ?? [])]);
+      return {
+        ok: true,
+        answer: out.answer.replace(/\*\*/g, ""),
+        uncertain: out.uncertain.replace(/\s*\[S\d+(?:,\s*S\d+)*\]/g, "").trim(),
+        answerable: out.answerable,
+        citations: list.filter((c) => used.has(c.ref)),
+      };
+    } catch (e) {
+      const { AiError } = await import("./ai.server");
+      if (e instanceof AiError) return { ok: false, error: e.message };
+      console.error("askPortfolio failed", e);
+      return { ok: false, error: "The answer couldn’t be prepared. Please try again." };
+    }
+  });
