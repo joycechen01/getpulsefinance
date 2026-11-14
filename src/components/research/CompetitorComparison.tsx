@@ -44,7 +44,7 @@ export function CompetitorComparison({ticker}:{ticker:string}) {
 
 const COLORS=["var(--color-chart-1)","var(--color-chart-2)","var(--color-chart-3)","var(--color-chart-4)","var(--color-chart-5)","var(--color-muted-foreground)"];
 type Row=Extract<ComparisonResult,{ok:true}>["rows"][number];
-function TrendChart({metric,label,term,rows,hidden,toggle}:{metric:ComparisonMetric;label:string;term:string;rows:Row[];hidden:string[];toggle:(t:string)=>void}){
+function TrendChart({metric,label,term,rows,hidden,toggle}:{metric:ComparisonMetric;label:string;term:(typeof COMPARISON_METRICS)[number]["term"];rows:Row[];hidden:string[];toggle:(t:string)=>void}){
   const quarters=[...new Set(rows.flatMap(r=>r.trend.map(p=>p.quarter)))].sort();
   const data=quarters.map(q=>{const o:Record<string,string|number|null>={quarter:q};for(const r of rows){const p=r.trend.find(x=>x.quarter===q);o[r.ticker]=p?.values[metric]??null;o[`${r.ticker}__end`]=p?.end??null;}return o;});
   const any=rows.some(r=>r.trend.some(p=>p.values[metric]!=null));

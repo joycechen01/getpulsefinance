@@ -13,7 +13,7 @@ export type NewsItem = { id: string; headline: string; source: string; summary: 
 
 const cache = new Map<string, { at: number; items: NewsItem[] }>();
 
-export async function fetchCompanyNews(ticker: string, keys: { gatewayKey?: string; connectionKey?: string }, request: typeof fetch = fetch) {
+export async function fetchCompanyNews(ticker: string, keys: { gatewayKey: string | undefined; connectionKey: string | undefined }, request: typeof fetch = fetch) {
   if (!keys.gatewayKey || !keys.connectionKey) return { ok: false as const, error: "News isn't connected right now." };
   const hit = cache.get(ticker);
   if (hit && Date.now() - hit.at < 15 * 60 * 1000) return { ok: true as const, items: hit.items };
