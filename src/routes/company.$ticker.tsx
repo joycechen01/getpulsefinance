@@ -12,6 +12,10 @@ import { Segmented } from "@/components/Segmented";
 import { Sparkline } from "@/components/Sparkline";
 import { Button } from "@/components/ui/button";
 import { CompanySearch } from "@/components/CompanySearch";
+import { AskPanel } from "@/components/research/AskPanel";
+import { RedlineView } from "@/components/research/RedlineView";
+import { SignalsPanel } from "@/components/research/SignalsPanel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { companyQuery } from "@/lib/edgar-queries";
@@ -105,6 +109,52 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
   const { company, financials: fin, filings, held } = data;
   const rows = fin ? (freq === "quarterly" ? fin.quarterly : fin.annual) : [];
   const cur = fin?.currency ?? "USD";
+  const overview = (
+    <>
+      {!fin || rows.length === 0 ? (
+          <div className="panel p-6 text-sm text-muted-foreground">
+            {company.name} has no structured XBRL financial data on EDGAR for this view.
+          </div>
+        ) : (
+          <>
+            <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {HEADLINE.map((m) => (
+                <HeadlineCard key={m.id} spec={m} rows={rows} currency={cur} freq={freq} />
+              ))}
+            </section>
+  
+            {signedIn ? (
+              <>
+                <TrendExplorer rows={rows} currency={cur} />
+                <section className="grid gap-5 lg:grid-cols-2">
+                  {GROUPS.map((g) => (
+                    <MetricGroup key={g.title} title={g.title} specs={g.metrics} rows={rows} currency={cur} freq={freq} />
+                  ))}
+                </section>
+              </>
+            ) : (
+              <section className="panel flex flex-wrap items-center justify-between gap-4 p-6">
+                <div className="flex items-start gap-3">
+                  <Lock className="mt-1 size-4 text-primary" />
+                  <div>
+                    <h2 className="text-2xl">See the full picture with a free account</h2>
+                    <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+                      Build a portfolio, monitor several companies side by side, see what changed between filings, get signals on material developments, ask questions with citations, explore trend charts and every
+                      metric group (growth, profitability, cash, quality of earnings, balance sheet, per share).
+                    </p>
+                  </div>
+                </div>
+                <Button asChild>
+                  <Link to="/auth">Sign up free</Link>
+                </Button>
+              </section>
+            )}
+          </>
+        )}
+  
+        <FilingList cik={company.cik} filings={filings} />
+    </>
+  );
 
   return (
     <div className="space-y-8 animate-rise">
@@ -145,48 +195,30 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </header>
 
-      {!fin || rows.length === 0 ? (
-        <div className="panel p-6 text-sm text-muted-foreground">
-          {company.name} has no structured XBRL financial data on EDGAR for this view.
-        </div>
+      {signedIn ? (
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="h-auto flex-wrap">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="changes">What changed</TabsTrigger>
+            <TabsTrigger value="signals">Signals</TabsTrigger>
+            <TabsTrigger value="ask">Ask</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="space-y-8">
+            {overview}
+          </TabsContent>
+          <TabsContent value="changes">
+            <RedlineView ticker={company.ticker} />
+          </TabsContent>
+          <TabsContent value="signals">
+            <SignalsPanel ticker={company.ticker} />
+          </TabsContent>
+          <TabsContent value="ask">
+            <AskPanel ticker={company.ticker} name={company.name} />
+          </TabsContent>
+        </Tabs>
       ) : (
-        <>
-          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {HEADLINE.map((m) => (
-              <HeadlineCard key={m.id} spec={m} rows={rows} currency={cur} freq={freq} />
-            ))}
-          </section>
-
-          {signedIn ? (
-            <>
-              <TrendExplorer rows={rows} currency={cur} />
-              <section className="grid gap-5 lg:grid-cols-2">
-                {GROUPS.map((g) => (
-                  <MetricGroup key={g.title} title={g.title} specs={g.metrics} rows={rows} currency={cur} freq={freq} />
-                ))}
-              </section>
-            </>
-          ) : (
-            <section className="panel flex flex-wrap items-center justify-between gap-4 p-6">
-              <div className="flex items-start gap-3">
-                <Lock className="mt-1 size-4 text-primary" />
-                <div>
-                  <h2 className="text-2xl">See the full picture with a free account</h2>
-                  <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-                    Build a portfolio, monitor several companies side by side, explore interactive trend charts and every
-                    metric group (growth, profitability, cash, quality of earnings, balance sheet, per share).
-                  </p>
-                </div>
-              </div>
-              <Button asChild>
-                <Link to="/auth">Sign up free</Link>
-              </Button>
-            </section>
-          )}
-        </>
+        overview
       )}
-
-      <FilingList cik={company.cik} filings={filings} />
 
       <p className="text-xs text-muted-foreground">
         All figures come from SEC XBRL company facts as filed, including amendments. Fourth-quarter and quarterly cash
