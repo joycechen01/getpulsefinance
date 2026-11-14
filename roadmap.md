@@ -15,3 +15,4 @@
 - [x] Apply the approved Crisp blue palette, Outfit/Figtree typography and publication-style app layouts.
 - [x] Verify redesigned public and signed-in screens on desktop and mobile.
 - [x] Refine the landing page with a stronger introduction, company links and a real public research preview; verify desktop and mobile.
+- [ ] Restore the initial Ledgerline visual design while retaining Pulse Finance naming and all current features.
