@@ -16,4 +16,4 @@
 - [x] Verify redesigned public and signed-in screens on desktop and mobile.
 - [x] Refine the landing page with a stronger introduction, company links and a real public research preview; verify desktop and mobile.
 - [x] Restore the initial Ledgerline visual design while retaining Pulse Finance naming and all current features; desktop/mobile verified.
-- [ ] Redesign only the landing page with sans-serif headline typography and interactive SEC-backed company research; verify mobile and desktop.
+- [x] Redesign only the landing page with sans-serif headline typography and interactive SEC-backed company research; mobile and desktop verified.
