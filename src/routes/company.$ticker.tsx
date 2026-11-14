@@ -60,7 +60,7 @@ function CompanyLayout() {
       <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
           <Link to={signedIn ? "/home" : "/"} aria-label="Pulse Finance home">
-            <Logo />
+            <PulseLogo size={28} color="var(--color-primary)" />
           </Link>
           <div className="ml-auto hidden w-80 md:block">
             <CompanySearch placeholder="Search any ticker…" />
