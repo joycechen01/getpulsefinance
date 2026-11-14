@@ -45,7 +45,9 @@ export async function deliverDigest(userId:string,recipient:string,digest:Earnin
   if(claimError){if(claimError.code==="23505")throw new Error("This company’s digest is already being processed for this period.");throw claimError;}
   const update=(values:{status:string;gmail_id?:string;sent_at?:string;error?:string})=>supabaseAdmin.from("digest_deliveries").update(values).eq("user_id",userId).eq("ticker",digest.ticker).eq("period_end",period);
   try{
-    const sent=await gmail(`messages?q=${encodeURIComponent(`in:sent rfc822msgid:${id}`)}&maxResults=1`);
+    // Gmail may replace supplied Message-ID headers; match the exact unique digest subject as well.
+    const subject=`Pulse Finance — ${digest.ticker} ${digest.period} earnings digest`;
+    const sent=await gmail(`messages?q=${encodeURIComponent(`in:sent {rfc822msgid:${id} subject:"${subject}"}`)}&maxResults=1`);
     if(sent.messages?.length){const saved=await update({status:"sent",gmail_id:sent.messages[0]?.id??"",sent_at:new Date().toISOString()});if(saved.error)throw saved.error;return {alreadySent:true};}
     const result=await gmail("messages/send","POST",{raw:rawDigestEmail(digest,recipient,id)});
     if(!result.id)throw new Error("Gmail did not confirm the send.");
