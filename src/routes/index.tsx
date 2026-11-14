@@ -6,8 +6,8 @@ import { CompanySearch } from "@/components/CompanySearch";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import researchPreview from "@/assets/pulse-company-research.jpg.asset.json";
-import { EvidenceBadge } from "@/components/EvidenceBadge";
+
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -91,21 +91,7 @@ function Landing() {
             ))}
           </div>
         </section>
-        <section className="landing-preview py-12">
-          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-            <div><p className="mb-2 text-xs text-primary">Inside Pulse Finance</p><h2>The numbers, in context.</h2></div>
-            <Button asChild variant="outline"><Link to="/company/$ticker" params={{ticker:"NVDA"}}>Explore NVIDIA <ArrowRight /></Link></Button>
-          </div>
-          <figure>
-            <Link to="/company/$ticker" params={{ticker:"NVDA"}} aria-label="Open NVIDIA company research" className="block overflow-hidden rounded-lg border bg-surface">
-              <img src={researchPreview.url} alt="Pulse Finance NVIDIA research page showing revenue, margins and historical financial charts" width="1152" height="1000" loading="lazy" className="block h-auto w-full" />
-            </Link>
-            <figcaption className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-              <span>App preview · NVIDIA · captured Nov 14, 2026</span><EvidenceBadge kind="fact" compact />
-              <a href="https://www.sec.gov/edgar/browse/?CIK=1045810" target="_blank" rel="noreferrer">SEC filings <ArrowUpRight className="inline size-3" /></a>
-            </figcaption>
-          </figure>
-        </section>
+
       </main>
       <footer className="border-t py-6 text-center text-xs text-muted-foreground">
         Data from SEC EDGAR. Not investment advice.
