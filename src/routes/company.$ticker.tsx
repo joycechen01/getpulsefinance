@@ -58,7 +58,7 @@ function CompanyLayout() {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
           <Link to={signedIn ? "/home" : "/"} aria-label="Pulse Finance home">
             <Logo />
           </Link>
@@ -73,7 +73,7 @@ function CompanyLayout() {
           <CompanySearch placeholder="Search any ticker…" />
         </div>
       </header>
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <CompanyPage signedIn={signedIn} />
       </main>
     </div>
@@ -119,7 +119,7 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
           </div>
         ) : (
           <>
-            <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <section className="company-metrics grid sm:grid-cols-2 lg:grid-cols-3">
               {HEADLINE.map((m) => (
                 <HeadlineCard key={m.id} spec={m} rows={rows} currency={cur} freq={freq} />
               ))}
@@ -128,7 +128,7 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
             {signedIn ? (
               <>
                 <TrendExplorer rows={rows} currency={cur} />
-                <section className="grid gap-8">
+                <section className="metric-groups grid gap-8 lg:grid-cols-2">
                   {GROUPS.map((g) => (
                     <MetricGroup key={g.title} title={g.title} specs={g.metrics} rows={rows} currency={cur} freq={freq} />
                   ))}
@@ -160,13 +160,13 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
 
   return (
     <div className="space-y-8 animate-rise">
-      <header className="flex flex-wrap items-end justify-between gap-6">
+      <header className="editorial-masthead flex flex-wrap items-end justify-between gap-6">
         <div>
           <div className="eyebrow">
             {company.ticker} · CIK {String(company.cik).padStart(10, "0")}
             {company.exchanges?.length ? ` · ${company.exchanges.join(", ")}` : ""}
           </div>
-          <h1 className="mt-1 text-4xl sm:text-5xl">{company.name}</h1>
+          <h1 className="mt-1">{company.name}</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             {company.sic_description ? `${toTitle(company.sic_description)}. ` : ""}
             {fin ? `Fiscal year ends in ${monthName(fin.fyEndMonth)}; periods are labeled as the company reports them. ` : ""}
@@ -199,7 +199,7 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
 
       {signedIn ? (
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="h-auto flex-wrap">
+          <TabsList className="research-tabs">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="changes">What changed</TabsTrigger>
             <TabsTrigger value="signals">Signals</TabsTrigger>
@@ -401,7 +401,7 @@ function TrendExplorer({ rows, currency }: { rows: FinRow[]; currency: string })
     .slice(-(quarterly ? years * 4 : years));
   const kind = spec.fmt === "ratio" || id === "assets" ? "line" : "bar";
   return (
-    <section className="panel p-5">
+    <section className="editorial-section">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-1">
           {TREND_OPTIONS.map((o) => (
@@ -456,7 +456,7 @@ function FilingList({
   const [form, setForm] = useState<"all" | "10-K" | "10-Q" | "8-K">("all");
   const shown = filings.filter((f) => form === "all" || f.form.startsWith(form)).slice(0, 25);
   return (
-    <section className="panel p-5">
+    <section className="editorial-section">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-2xl">Filing history</h2>
         <Segmented

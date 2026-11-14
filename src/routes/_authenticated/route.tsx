@@ -2,6 +2,7 @@ import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/
 import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, Settings } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { CompanySearch } from "@/components/CompanySearch";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,7 +29,7 @@ function AppShell() {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
           <Link to="/home" aria-label="Pulse Finance home">
             <Logo />
           </Link>
@@ -52,20 +53,22 @@ function AppShell() {
           >
             <Settings className="size-4" />
           </Link>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             type="button"
             onClick={signOut}
             aria-label="Sign out"
             className="rounded-md p-2 text-muted-foreground hover:bg-secondary hover:text-foreground"
           >
             <LogOut className="size-4" />
-          </button>
+          </Button>
         </div>
         <div className="px-4 pb-3 md:hidden">
           <CompanySearch placeholder="Research any company…" />
         </div>
       </header>
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <Outlet />
       </main>
     </div>
