@@ -220,7 +220,7 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
             <AskPanel ticker={company.ticker} name={company.name} />
           </TabsContent>
           <TabsContent value="story">
-            <StoryTimeline ticker={company.ticker} fin={fin} sourceUrl={filings[0] ? secDocUrl(company.cik, filings[0].accession, filings[0].primary_document) : `https://www.sec.gov/edgar/browse/?CIK=${company.cik}`} />
+            <StoryTimeline ticker={company.ticker} />
           </TabsContent>
           <TabsContent value="competitors">
             <CompetitorComparison ticker={company.ticker} />
