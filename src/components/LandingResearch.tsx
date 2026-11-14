@@ -61,27 +61,6 @@ function useCountUp(target: number | null, reduced: boolean) {
   return shown;
 }
 
-/** Adds `is-visible` once the element scrolls into view (300ms fade, staggered by `index`). */
-function useReveal(index = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          el.classList.add("is-visible");
-          io.disconnect();
-        }
-      },
-      { threshold: 0.15 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  return { ref, delay: index * 100 };
-}
-
 function firstSentence(text: string | null, fallback: string | null): string {
   const src = (text ?? fallback ?? "").replace(/\s+/g, " ").trim();
   if (!src) return "";
