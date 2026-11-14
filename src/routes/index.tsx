@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, FileSearch, GitCompare, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { CompanySearch } from "@/components/CompanySearch";
@@ -28,22 +28,11 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const FEATURES = [
-  {
-    icon: FileSearch,
-    title: "Reads every filing",
-    text: "10-Ks, 10-Qs and 8-Ks for each holding, straight from SEC EDGAR.",
-  },
-  {
-    icon: GitCompare,
-    title: "Remembers the history",
-    text: "Each new report is compared with what the company said and reported before.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Shows its evidence",
-    text: "Every statement is labeled as disclosed fact, calculated metric or AI interpretation.",
-  },
+const COMPANIES = [
+  { ticker: "NVDA", name: "NVIDIA" },
+  { ticker: "CRWD", name: "CrowdStrike" },
+  { ticker: "INTC", name: "Intel" },
+  { ticker: "TSLA", name: "Tesla" },
 ];
 
 function Landing() {
@@ -53,21 +42,23 @@ function Landing() {
   }, []);
   return (
     <div className="landing-page min-h-screen">
-      <header className="flex items-center justify-between border-b bg-surface px-4 py-4 md:px-6">
+      <header className="border-b bg-surface">
+        <div className="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-4 md:px-6">
         <Logo />
         <Button asChild variant={signedIn ? "default" : "ghost"} size="sm">
           <Link to={signedIn ? "/home" : "/auth"}>{signedIn ? "Open portfolio" : "Sign in"}</Link>
         </Button>
+        </div>
       </header>
-      <main className="mx-auto max-w-[1120px] px-4 md:px-6">
-        <section className="animate-rise pt-12 pb-12">
+      <main className="mx-auto max-w-[1200px] px-4 md:px-6">
+        <section className="editorial-masthead animate-rise pt-12">
           <div className="mb-4 text-xs text-teal">
             SEC-grounded research
           </div>
-          <h1 className="max-w-xl font-display font-medium">
+          <h1 className="landing-title font-display font-medium">
             Pulse Finance
           </h1>
-          <p className="mt-2 font-sans text-[15px] font-medium text-foreground">Know what you own.</p>
+          <p className="landing-tagline mt-3 text-foreground">Know what you own.</p>
           <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-muted-foreground">
             Pulse Finance reads the SEC filings of every company you own and tells you what changed and
             why it matters, with the source passage behind every claim.
@@ -84,14 +75,16 @@ function Landing() {
             </Button>
           </div>
         </section>
-        <section className="grid gap-4 pb-12 sm:grid-cols-3">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="panel p-4">
-              <f.icon className="size-5 text-primary" />
-              <h2 className="landing-card-title mt-4">{f.title}</h2>
-              <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{f.text}</p>
-            </div>
-          ))}
+        <section className="py-8">
+          <h2>Company research</h2>
+          <div className="mt-6 grid gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
+            {COMPANIES.map((c) => (
+              <Link key={c.ticker} to="/company/$ticker" params={{ticker:c.ticker}} className="group flex items-center justify-between gap-4 border-t py-5">
+                <span><span className="figure block text-xs text-muted-foreground">{c.ticker}</span><span className="mt-1 block font-display text-xl text-foreground">{c.name}</span></span>
+                <ArrowRight className="size-4 shrink-0 text-primary" />
+              </Link>
+            ))}
+          </div>
         </section>
       </main>
       <footer className="border-t py-6 text-center text-xs text-muted-foreground">
