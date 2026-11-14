@@ -30,8 +30,6 @@ export function Sparkline({
   });
   let lastIdx = values.length - 1;
   while (lastIdx > 0 && values[lastIdx] == null) lastIdx--;
-  const last = values[lastIdx]!;
-  const ly = height - 2 - ((last - min) / span) * (height - 4);
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className={className} aria-hidden>
       {min < 0 && max > 0 && (
@@ -44,8 +42,7 @@ export function Sparkline({
           strokeDasharray="2 3"
         />
       )}
-      <path d={d} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" />
-      <circle cx={lastIdx * step} cy={ly} r={2.5} fill="currentColor" />
+      <path d={d} fill="none" stroke="currentColor" strokeWidth={2} strokeLinejoin="round" />
     </svg>
   );
 }

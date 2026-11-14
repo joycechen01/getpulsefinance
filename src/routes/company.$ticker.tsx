@@ -126,7 +126,7 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
             {signedIn ? (
               <>
                 <TrendExplorer rows={rows} currency={cur} />
-                <section className="grid gap-5 lg:grid-cols-2">
+                <section className="grid gap-8">
                   {GROUPS.map((g) => (
                     <MetricGroup key={g.title} title={g.title} specs={g.metrics} rows={rows} currency={cur} freq={freq} />
                   ))}
@@ -425,7 +425,7 @@ function TrendExplorer({ rows, currency }: { rows: FinRow[]; currency: string })
           <MetricChart
             data={pts}
             kind={kind}
-            color={spec.fmt === "ratio" ? "var(--color-chart-2)" : "var(--color-chart-1)"}
+            color="var(--color-chart-1)"
             fmt={(v) => fmtValue(v, spec.fmt, currency)}
             axisFmt={(v) => (spec.fmt === "ratio" ? `${Math.round(v * 100)}%` : formatMoney(v, currency, 0))}
           />

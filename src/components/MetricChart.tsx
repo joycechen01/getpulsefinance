@@ -71,11 +71,11 @@ export function MetricChart({
         <BarChart data={data} margin={{ top: 8, right: 4, bottom: 0, left: 0 }} barCategoryGap="20%">
           {common}
           {hasNeg && <ReferenceLine y={0} stroke="var(--color-rule)" />}
-          <Bar dataKey="value" radius={[2, 2, 0, 0]} animationDuration={450}>
+          <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={24} animationDuration={150}>
             {data.map((d) => (
               <Cell
                 key={d.label}
-                fill={(d.value ?? 0) < 0 ? "var(--color-negative)" : color}
+                fill={color}
                 fillOpacity={d.derived ? 0.55 : 1}
               />
             ))}
@@ -93,7 +93,7 @@ export function MetricChart({
             dot={false}
             connectNulls
             activeDot={{ r: 4, stroke: "var(--color-card)", strokeWidth: 2 }}
-            animationDuration={450}
+            animationDuration={150}
           />
         </LineChart>
       )}
