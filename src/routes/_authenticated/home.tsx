@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { CompanySearch } from "@/components/CompanySearch";
+import { DevelopmentsPanel } from "@/components/research/DevelopmentsPanel";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { InfoTip } from "@/components/InfoTip";
 import { Sparkline } from "@/components/Sparkline";
@@ -113,13 +114,7 @@ function Home() {
             ))}
           </ul>
         </section>
-        <section className="panel p-5">
-          <h2 className="text-2xl">Developments to watch</h2>
-          <p className="mt-3 text-sm text-muted-foreground">
-            Material developments, cross-portfolio exposures and companies needing attention will appear here once
-            filing-text analysis is switched on.
-          </p>
-        </section>
+        <DevelopmentsPanel />
       </div>
     </div>
   );

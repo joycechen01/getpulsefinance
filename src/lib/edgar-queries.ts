@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 
+import { askCompany, getChanges, getCompanySignals, getPortfolioSignals } from "./analysis.functions";
 import { searchCompanies } from "./edgar.functions";
 import { getCompany, getCompanyPublic, getPortfolio, getQuotes } from "./portfolio.functions";
 
@@ -28,3 +29,23 @@ export const quotesQuery = (tickers: string[]) =>
     staleTime: 5 * 60 * 1000,
     enabled: tickers.length > 0,
   });
+
+export const changesQuery = (ticker: string) =>
+  queryOptions({
+    queryKey: ["changes", ticker.toUpperCase()],
+    queryFn: () => getChanges({ data: { ticker } }),
+    staleTime: 30 * 60 * 1000,
+    retry: false,
+  });
+
+export const signalsQuery = (ticker: string) =>
+  queryOptions({
+    queryKey: ["signals", ticker.toUpperCase()],
+    queryFn: () => getCompanySignals({ data: { ticker } }),
+    staleTime: 30 * 60 * 1000,
+    retry: false,
+  });
+
+export const portfolioSignalsQuery = () =>
+  queryOptions({ queryKey: ["portfolio-signals"], queryFn: () => getPortfolioSignals(), staleTime: 60 * 1000 });
+
