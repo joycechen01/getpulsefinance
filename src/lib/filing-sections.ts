@@ -54,6 +54,15 @@ const TENQ: Partial<Record<SectionId, Bound>> = {
 };
 const BUSINESS: Bound = { start: /^item\s*1\b(?![0-9a-z])/i, end: /^item\s*1a\b/i };
 
+// Fallback for filings that use titled sections without "Item" numbers (e.g. Intel).
+const TITLED: Partial<Record<SectionId, Bound>> = {
+  risk: { start: /^risk factors$/i, end: /^(other key information|quantitative and qualitative|financial statements|unresolved staff|legal proceedings|unregistered sales)/i },
+  mdna: {
+    start: /^management.s discussion and analysis( of financial condition and results of operations)?( \(md&a\))?$/i,
+    end: /^(quantitative and qualitative|risk factors|financial statements|controls and procedures)/i,
+  },
+};
+
 const isHeadingLine = (l: string) => l.length < 160;
 
 /** Longest block between a start heading and an end heading (skips the table of contents). */
@@ -64,7 +73,10 @@ function sliceSection(lines: string[], b: Bound): string[] {
     if (!isHeadingLine(l) || !b.start.test(l)) continue;
     let j = i + 1;
     while (j < lines.length && !(isHeadingLine(lines[j]!) && b.end.test(lines[j]!))) j++;
-    const block = lines.slice(i + 1, j);
+    const block = lines
+      .slice(i + 1, j)
+      // drop running page headers such as "MD&A 31" or a repeated section title
+      .filter((x) => !(x.length < 50 && (b.start.test(x) || /^[A-Za-z&'’ ]{2,40} \d{1,3}$/.test(x) || /^(md&a|risk factors)$/i.test(x))));
     if (block.join(" ").length > best.join(" ").length) best = block;
   }
   return best;
@@ -137,11 +149,13 @@ export function extractSections(html: string, form: string): Partial<Record<Sect
   }
   const bounds = base === "10-K" || base === "20-F" ? TENK : TENQ;
   for (const [id, b] of Object.entries(bounds) as [SectionId, Bound][]) {
-    const p = toPassages(sliceSection(lines, b));
+    let p = toPassages(sliceSection(lines, b));
+    if (!p.length && TITLED[id]) p = toPassages(sliceSection(lines, TITLED[id]!));
     if (p.length) res[id] = p;
   }
   if (base === "10-K") {
-    const comp = toPassages(competitionFrom(sliceSection(lines, BUSINESS)));
+    const biz = sliceSection(lines, BUSINESS);
+    const comp = toPassages(competitionFrom(biz.length ? biz : lines));
     if (comp.length) res.competition = comp;
   }
   return res;
