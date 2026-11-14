@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- SEC EDGAR is fetched only from server code in `src/lib/edgar.server.ts` (exposed via `src/lib/edgar.functions.ts`); the SEC requires a contact User-Agent (overridable with `SEC_USER_AGENT`) and ~10 req/s, so responses are cached in memory.
+- XBRL-to-period logic lives in the pure module `src/lib/edgar-parse.ts` with unit tests beside it; keep it free of I/O so it stays testable.
+- Chart/page state (ticker, period, range) lives in URL search params on `/` so views are shareable and the loader only refetches when the ticker changes.
