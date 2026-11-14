@@ -120,7 +120,7 @@ function metricContext(fin: Financials | null): string {
     const l = latestWithYoY(rows, id);
     if (!l) return;
     const f = (v: number | null) => (v == null ? "n/a" : pct ? `${(v * 100).toFixed(1)}%` : `${(v / 1e6).toFixed(0)}M`);
-    lines.push(`${label}: ${f(l.value)} in ${l.row.label} vs ${f(l.prior?.value ?? null)} a year earlier`);
+    lines.push(`${label}: ${f(l.value)} in ${l.row.label} vs ${f(l.prior)} a year earlier`);
   };
   add("Revenue", "revenue");
   add("Gross margin", "grossMargin", true);
