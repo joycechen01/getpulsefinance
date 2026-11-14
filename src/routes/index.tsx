@@ -18,11 +18,11 @@ const RANGES: Range[] = ["3y", "5y", "10y", "all"];
 export const Route = createFileRoute("/")({
   validateSearch: (s: Record<string, unknown>) => ({
     ticker:
-      typeof s.ticker === "string" && s.ticker.trim()
-        ? s.ticker.trim().toUpperCase().slice(0, 12)
+      typeof s["ticker"] === "string" && s["ticker"].trim()
+        ? s["ticker"].trim().toUpperCase().slice(0, 12)
         : undefined,
-    freq: s.freq === "annual" ? ("annual" as const) : undefined,
-    range: RANGES.includes(s.range as Range) ? (s.range as Range) : undefined,
+    freq: s["freq"] === "annual" ? ("annual" as const) : undefined,
+    range: RANGES.includes(s["range"] as Range) ? (s["range"] as Range) : undefined,
   }),
   loaderDeps: ({ search }) => ({ ticker: search.ticker ?? "AAPL" }),
   loader: ({ context, deps }) => context.queryClient.ensureQueryData(financialsQuery(deps.ticker)),
@@ -225,7 +225,8 @@ function Index() {
 
 function trimEmpty(rows: PeriodRow[]) {
   let start = 0;
-  while (start < rows.length && rows[start].revenue == null && rows[start].netIncome == null) start++;
+  while (start < rows.length && rows[start]?.revenue == null && rows[start]?.netIncome == null)
+    start++;
   return rows.slice(start);
 }
 
