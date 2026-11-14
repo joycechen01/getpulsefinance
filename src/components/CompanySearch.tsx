@@ -10,10 +10,13 @@ export function CompanySearch({
   onPick,
   placeholder = "Search a company or ticker — e.g. Nvidia, CRWD",
   quick = [],
+  actionLabel,
 }: {
   onPick?: (ticker: string) => void;
   placeholder?: string;
   quick?: string[];
+  /** Shows a submit button inside the field (e.g. "Look up"). */
+  actionLabel?: string;
 }) {
   const navigate = useNavigate();
   const [text, setText] = useState("");
