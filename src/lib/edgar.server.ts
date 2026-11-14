@@ -78,3 +78,11 @@ export async function getSubmissions(cik: number): Promise<Submissions | null> {
   }
   return (await res.json()) as Submissions;
 }
+
+/** Primary document HTML of one filing from the EDGAR archive. */
+export async function getFilingHtml(cik: number, accession: string, primaryDocument: string): Promise<string> {
+  const url = `https://www.sec.gov/Archives/edgar/data/${cik}/${accession.replace(/-/g, "")}/${primaryDocument}`;
+  const res = await secFetch(url);
+  if (!res.ok) throw new Error(`SEC filing document unavailable (${res.status})`);
+  return res.text();
+}
