@@ -8,3 +8,6 @@
 - [x] Build on-demand earnings digests and developments using real SEC data.
 - [x] Send each company/period once through connected Gmail, restricted to the mailbox owner's account.
 - [x] Verify digest previews, Gmail delivery and duplicate protection.
+- [ ] Phase 5: material-event emails with a separate opt-in, SEC item filtering and duplicate protection.
+- [ ] Phase 5: cited earnings-call summaries from Alpha Vantage, cached for the matching fiscal quarter.
+- [ ] Test Phase 5 against real filings and available transcripts; leave remaining Phase 4 features on hold.
