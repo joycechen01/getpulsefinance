@@ -205,6 +205,7 @@ main.max-w-7xl, main.max-w-6xl, header > .max-w-7xl { max-width: 1200px; }
 .figure.text-3xl { font-size: 28px; font-weight: 500; }
 .recharts-cartesian-axis-tick-value { font-family: var(--font-sans); font-size: 12px; fill: var(--color-muted-foreground); }
 .recharts-cartesian-grid line { stroke: var(--color-rule); }
+.compare-chart .recharts-cartesian-grid line { stroke: #E4E0D6; }
 .recharts-surface:focus, .recharts-wrapper:focus { outline: none; }
 @media (max-width: 767px) {
   h1 { font-size: 32px; }

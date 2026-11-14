@@ -41,7 +41,7 @@ export function CompetitorComparison({ticker}:{ticker:string}) {
   </section>;
 }
 
-const ACCENT="var(--color-accent)";
+const ACCENT="var(--color-primary)";
 const GREY="#868C95";
 const INK="#1A1A17";
 const RULE="#E4E0D6";
@@ -59,9 +59,10 @@ const GENERIC_CAPTION="Companies are aligned to the nearest calendar quarter.";
 function commonName(name:string,ticker:string){
   const cleaned=name.replace(/[,\s]+(INC|CORP|CORPORATION|CO|COMPANY|LTD|LLC|PLC|N\.?V\.?|S\.?A\.?|AG|SE|HOLDINGS?|GROUP)( CLASS [A-Z])?\.?$/gi,"").trim();
   if(!cleaned)return ticker;
-  if(cleaned.length<=4&&cleaned===cleaned.toUpperCase())return cleaned;
-  if(cleaned===cleaned.toUpperCase()&&cleaned.length>6)return cleaned.toLowerCase().replace(/(^|\s)[a-z]/g,c=>c.toUpperCase());
-  return cleaned;
+  const pretty=cleaned.length<=4&&cleaned===cleaned.toUpperCase()?cleaned
+    :cleaned===cleaned.toUpperCase()&&cleaned.length>6?cleaned.toLowerCase().replace(/(^|\s)[a-z]/g,c=>c.toUpperCase())
+    :cleaned;
+  return pretty.length>14?ticker:pretty;
 }
 
 function niceTicks(min:number,max:number){
@@ -142,7 +143,7 @@ function TrendChart({metric,label,term,rows}:{metric:ComparisonMetric;label:stri
     <p className="text-xs text-muted-foreground">{CAPTIONS[metric]??GENERIC_CAPTION}</p>
     {!any?<p className="text-sm text-muted-foreground">Not reported for the selected companies.</p>:
     <ClientOnly fallback={<div className="h-64 rounded bg-muted"/>}>
-      <div ref={wrapRef} className="relative">
+      <div ref={wrapRef} className="compare-chart relative">
         {narrow&&<div className="mb-2 flex flex-wrap gap-x-4 gap-y-1">{withData.map((r,i)=><button key={r.cik} type="button" className="flex items-center gap-1.5 text-xs" style={{color:i===0?INK:GREY}} onMouseEnter={()=>setHover(r.ticker)} onMouseLeave={()=>setHover(null)} onFocus={()=>setHover(r.ticker)} onBlur={()=>setHover(null)}><span style={{width:12,height:3,borderRadius:2,background:i===0?ACCENT:GREY}}/>{commonName(r.name,r.ticker)}</button>)}</div>}
         {width>0&&<LineChart width={width} height={CHART_H} data={data} margin={margin} onMouseLeave={()=>setHover(null)}>
           <CartesianGrid vertical={false} stroke={RULE} strokeWidth={1}/>
