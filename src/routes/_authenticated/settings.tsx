@@ -1,0 +1,85 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { supabase } from "@/integrations/supabase/client";
+import { profileQuery } from "@/lib/profile";
+
+export const Route = createFileRoute("/_authenticated/settings")({
+  head: () => ({ meta: [{ title: "Settings — Pulse Finance" }] }),
+  component: SettingsPage,
+});
+
+function SettingsPage() {
+  const qc = useQueryClient();
+  const { data: p, isLoading } = useQuery(profileQuery());
+  const [email, setEmail] = useState("");
+  const [digest, setDigest] = useState(true);
+  const [audio, setAudio] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!p) return;
+    setEmail(p.delivery_email ?? p.email);
+    setDigest(p.digest_email_enabled);
+    setAudio(p.audio_digest_enabled);
+  }, [p]);
+
+  const save = async () => {
+    if (!p) return;
+    setSaving(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ delivery_email: email.trim() || null, digest_email_enabled: digest, audio_digest_enabled: audio, updated_at: new Date().toISOString() })
+      .eq("id", p.id);
+    setSaving(false);
+    if (error) toast.error("Couldn’t save settings");
+    else {
+      toast.success("Settings saved");
+      qc.invalidateQueries({ queryKey: ["profile"] });
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-xl animate-rise">
+      <h1 className="text-4xl">Settings</h1>
+      <p className="mt-1 text-sm text-muted-foreground">Signed in as {p?.email ?? "…"}</p>
+      <div className="panel mt-6 divide-y">
+        <div className="space-y-1.5 p-5">
+          <Label htmlFor="delivery">Delivery email</Label>
+          <Input id="delivery" type="email" value={email} disabled={isLoading} onChange={(e) => setEmail(e.target.value)} />
+          <p className="text-xs text-muted-foreground">Where earnings digests will be sent.</p>
+        </div>
+        <label className="flex items-center justify-between gap-4 p-5">
+          <span>
+            <span className="block text-sm font-medium">Earnings digest emails</span>
+            <span className="block text-xs text-muted-foreground">
+              One email when a holding reports a 10-Q or 10-K. Never a daily newsletter.
+            </span>
+          </span>
+          <Switch checked={digest} onCheckedChange={setDigest} />
+        </label>
+        <label className="flex items-center justify-between gap-4 p-5">
+          <span>
+            <span className="block text-sm font-medium">Audio digest</span>
+            <span className="block text-xs text-muted-foreground">A 60–90 second spoken version of each digest.</span>
+          </span>
+          <Switch checked={audio} onCheckedChange={setAudio} />
+        </label>
+      </div>
+      <p className="mt-3 text-xs text-muted-foreground">
+        Digests aren’t being sent yet. These preferences will apply once digest delivery is switched on.
+      </p>
+      <div className="mt-5 flex justify-end">
+        <Button onClick={save} disabled={saving || !p}>
+          {saving ? "Saving…" : "Save settings"}
+        </Button>
+      </div>
+    </div>
+  );
+}
