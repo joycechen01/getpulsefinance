@@ -18,7 +18,12 @@
 - Each item shows headline, publisher, date, short summary and a link to the original article, labeled as outside news (not SEC evidence).
 - No AI rewriting, no sentiment or buy/sell language; empty or unavailable news shows a plain message.
 
-## 3. Suggested follow-ups (in priority order)
+## 3. Move "Ask" into Overview, and add Ask to the portfolio page
+- Remove the separate Ask tab; place the Ask box on the Overview tab directly under the six key-metric cards.
+- Add an Ask box on the portfolio page that answers across all your holdings, citing each company's SEC passages by name; if a question can't be answered from the filings, it says so.
+- Same rules as today: cited answers only, no figures invented by AI, no buy/sell advice.
+
+## 4. Suggested follow-ups (in priority order)
 1. "Say versus numbers" cards — management statements next to the matching financial trend, both cited.
 2. Show the competitor comparison and story timeline teaser to signed-out visitors on company pages.
 3. Upcoming earnings dates and post-earnings price move using the connected Finnhub data.
@@ -29,4 +34,5 @@
 - Add a pure `comparisonTrend(fin, quarters)` helper in `src/lib/research.ts` that reuses the existing TTM/quarter derivation in `metrics.ts`; add unit tests (gap handling, quarter alignment, 5-company cap for select all).
 - Extend the comparison server function to return per-company trend series alongside the current latest values; no AI involvement, no new data sources.
 - Add an authenticated, cached (~15 min) server function calling Finnhub `company-news` through the existing connector gateway helper; remove the StoryTimeline tab usage.
+- Reuse the existing Ask component on Overview; add a protected portfolio Ask function that gathers cached passages for the owner's holdings (capped per company) and requires citations tagged by ticker.
 - Update `CompetitorComparison.tsx`: select-all control, Recharts `LineChart` behind `ClientOnly`, legend toggles; verify desktop and mobile with Playwright on NVDA and INTC.
