@@ -27,6 +27,7 @@ export const quotesQuery = (tickers: string[]) =>
     queryKey: ["quotes", ...tickers],
     queryFn: () => getQuotes({ data: { tickers } }),
     staleTime: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
     enabled: tickers.length > 0,
   });
 
