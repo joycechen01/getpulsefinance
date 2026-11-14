@@ -22,7 +22,6 @@ import { fmtChange, fmtValue } from "@/lib/metric-config";
 import { latestWithYoY, series } from "@/lib/metrics";
 import { addHolding, removeHolding, updateHolding, type PortfolioRow } from "@/lib/portfolio.functions";
 import { profileQuery } from "@/lib/profile";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/home")({
   head: () => ({ meta: [
