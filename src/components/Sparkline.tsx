@@ -28,7 +28,8 @@ export function Sparkline({
     d += `${pen ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`;
     pen = true;
   });
-  const lastIdx = values.findLastIndex((v) => v != null);
+  let lastIdx = values.length - 1;
+  while (lastIdx > 0 && values[lastIdx] == null) lastIdx--;
   const last = values[lastIdx]!;
   const ly = height - 2 - ((last - min) / span) * (height - 4);
   return (
