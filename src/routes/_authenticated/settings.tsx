@@ -28,6 +28,7 @@ function SettingsPage() {
   const [email, setEmail] = useState("");
   const [digest, setDigest] = useState(true);
   const [audio, setAudio] = useState(true);
+  const [events, setEvents] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -35,6 +36,7 @@ function SettingsPage() {
     setEmail(p.delivery_email ?? p.email);
     setDigest(p.digest_email_enabled);
     setAudio(p.audio_digest_enabled);
+    setEvents(p.material_event_email_enabled);
   }, [p]);
 
   const save = async () => {
@@ -42,7 +44,7 @@ function SettingsPage() {
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
-      .update({ delivery_email: email.trim() || null, digest_email_enabled: digest, audio_digest_enabled: audio, updated_at: new Date().toISOString() })
+      .update({ delivery_email: email.trim() || null, digest_email_enabled: digest, audio_digest_enabled: audio, material_event_email_enabled: events, updated_at: new Date().toISOString() })
       .eq("id", p.id);
     setSaving(false);
     if (error) toast.error("Couldn’t save settings");
@@ -57,6 +59,7 @@ function SettingsPage() {
       <h1 className="text-4xl">Settings</h1>
       <p className="mt-1 text-sm text-muted-foreground">Signed in as {p?.email ?? "…"}</p>
       <div className="panel mt-6 divide-y">
+        <label className="flex items-center justify-between gap-4 p-5"><span><span className="block text-sm font-medium">Material event emails</span><span className="block text-xs text-muted-foreground">Allow selected SEC 8-K events to be emailed separately. No audio.</span></span><Switch aria-label="Material event emails" checked={events} onCheckedChange={setEvents}/></label>
         <div className="space-y-1.5 p-5">
           <Label htmlFor="delivery">Delivery email</Label>
           <Input id="delivery" type="email" value={email} disabled={isLoading} onChange={(e) => setEmail(e.target.value)} />
