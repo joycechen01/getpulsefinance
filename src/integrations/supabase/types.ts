@@ -50,6 +50,60 @@ export type Database = {
         }
         Relationships: []
       }
+      filing_extractions: {
+        Row: {
+          accession: string
+          cik: number
+          extracted_at: string
+          section_counts: Json
+          status: string
+        }
+        Insert: {
+          accession: string
+          cik: number
+          extracted_at?: string
+          section_counts?: Json
+          status: string
+        }
+        Update: {
+          accession?: string
+          cik?: number
+          extracted_at?: string
+          section_counts?: Json
+          status?: string
+        }
+        Relationships: []
+      }
+      filing_passages: {
+        Row: {
+          accession: string
+          body: string
+          cik: number
+          id: number
+          pos: number
+          section: string
+          tsv: unknown
+        }
+        Insert: {
+          accession: string
+          body: string
+          cik: number
+          id?: number
+          pos: number
+          section: string
+          tsv?: unknown
+        }
+        Update: {
+          accession?: string
+          body?: string
+          cik?: number
+          id?: number
+          pos?: number
+          section?: string
+          tsv?: unknown
+        }
+        Relationships: []
+      }
       filings: {
         Row: {
           accession: string
@@ -170,12 +224,121 @@ export type Database = {
         }
         Relationships: []
       }
+      redlines: {
+        Row: {
+          accession: string
+          changes: Json
+          cik: number
+          created_at: string
+          prior_accession: string
+        }
+        Insert: {
+          accession: string
+          changes: Json
+          cik: number
+          created_at?: string
+          prior_accession: string
+        }
+        Update: {
+          accession?: string
+          changes?: Json
+          cik?: number
+          created_at?: string
+          prior_accession?: string
+        }
+        Relationships: []
+      }
+      signal_analyses: {
+        Row: {
+          accession: string
+          analyzed_at: string
+          cik: number
+          signal_count: number
+        }
+        Insert: {
+          accession: string
+          analyzed_at?: string
+          cik: number
+          signal_count?: number
+        }
+        Update: {
+          accession?: string
+          analyzed_at?: string
+          cik?: number
+          signal_count?: number
+        }
+        Relationships: []
+      }
+      signals: {
+        Row: {
+          accession: string
+          category: string
+          cik: number
+          confidence: string
+          created_at: string
+          filed_date: string | null
+          history: string
+          id: string
+          metric_note: string | null
+          passage_ids: number[]
+          title: string
+          uncertain: string
+          what_happened: string
+          whats_new: string
+          why_it_matters: string
+        }
+        Insert: {
+          accession: string
+          category: string
+          cik: number
+          confidence: string
+          created_at?: string
+          filed_date?: string | null
+          history: string
+          id?: string
+          metric_note?: string | null
+          passage_ids?: number[]
+          title: string
+          uncertain: string
+          what_happened: string
+          whats_new: string
+          why_it_matters: string
+        }
+        Update: {
+          accession?: string
+          category?: string
+          cik?: number
+          confidence?: string
+          created_at?: string
+          filed_date?: string | null
+          history?: string
+          id?: string
+          metric_note?: string | null
+          passage_ids?: number[]
+          title?: string
+          uncertain?: string
+          what_happened?: string
+          whats_new?: string
+          why_it_matters?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      search_passages: {
+        Args: { _cik: number; _limit?: number; _q: string }
+        Returns: {
+          accession: string
+          body: string
+          id: number
+          pos: number
+          rank: number
+          section: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
