@@ -63,7 +63,7 @@ function SettingsPage() {
       <h1 className="text-4xl">Settings</h1>
       <p className="mt-1 text-sm text-muted-foreground">Signed in as {p?.email ?? "…"}</p>
       <div className="panel mt-6 divide-y">
-        <label className="flex items-center justify-between gap-4 p-5"><span><span className="block text-sm font-medium">Material event emails</span><span className="block text-xs text-muted-foreground">Daily review of one holding for selected SEC 8-K events. No audio. Existing filings are not backfilled.</span></span><Switch aria-label="Material event emails" checked={events} onCheckedChange={setEvents}/></label>
+        <label className="flex items-center justify-between gap-4 p-5"><span><span className="block text-sm font-medium">Material event emails</span><span className="block text-xs text-muted-foreground">Daily review of one holding for selected SEC 8-K events. No audio. Existing filings are not backfilled.</span></span><Switch aria-label="Material event emails" disabled={isLoading||saving} checked={events} onCheckedChange={setEvents}/></label>
         <div className="space-y-1.5 p-5">
           <Label htmlFor="delivery">Delivery email</Label>
           <Input id="delivery" type="email" value={email} disabled={isLoading} onChange={(e) => setEmail(e.target.value)} />
@@ -87,7 +87,7 @@ function SettingsPage() {
         </label>
       </div>
       <p className="mt-3 text-xs text-muted-foreground">
-        Send digests from your portfolio using the account that matches the connected Gmail. Automatic delivery and audio are not enabled yet.
+        Send digests from your portfolio using the account that matches the connected Gmail. Automatic earnings-digest delivery and audio are not enabled yet.
       </p>
       <div className="mt-5 flex justify-end">
         <Button onClick={save} disabled={saving || !p}>
