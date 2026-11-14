@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { CompanySearch } from "@/components/CompanySearch";
 import { LandingResearch } from "@/components/LandingResearch";
-import { Logo } from "@/components/Logo";
+import { PulseLogo } from "@/components/PulseLogo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useReveal } from "@/lib/use-reveal";
@@ -59,7 +59,7 @@ function Landing() {
     <div className="landing-page landing-dynamic min-h-screen">
       <header className="border-b bg-surface">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-4 md:px-6">
-          <Logo />
+          <PulseLogo size={28} color="var(--color-primary)" />
           <div className="flex items-center gap-2">
             <Button asChild variant="ghost" size="sm">
               <Link to={signedIn ? "/home" : "/auth"}>{signedIn ? "Open portfolio" : "Sign in"}</Link>
@@ -107,6 +107,9 @@ function Landing() {
         </section>
       </main>
       <footer className="border-t py-6 text-center text-xs text-muted-foreground">
+        <div className="mb-3 flex justify-center text-foreground">
+          <PulseLogo size={28} color="var(--color-primary)" />
+        </div>
         Data from SEC EDGAR. Not investment advice.
       </footer>
     </div>
