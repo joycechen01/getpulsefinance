@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { CompanySearch } from "@/components/CompanySearch";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import researchPreview from "@/assets/pulse-company-research.jpg.asset.json";
+import { EvidenceBadge } from "@/components/EvidenceBadge";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -51,40 +53,58 @@ function Landing() {
         </div>
       </header>
       <main className="mx-auto max-w-[1200px] px-4 md:px-6">
-        <section className="editorial-masthead animate-rise pt-12">
-          <div className="mb-4 text-xs text-teal">
-            SEC-grounded research
+        <section className="landing-intro animate-rise">
+          <div className="mb-4 inline-flex items-center gap-2 text-xs text-primary">
+            <FileText className="size-4" /> SEC-grounded research
           </div>
           <h1 className="landing-title font-display font-medium">
             Pulse Finance
           </h1>
-          <p className="landing-tagline mt-3 text-foreground">Know what you own.</p>
-          <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-muted-foreground">
-            Pulse Finance reads the SEC filings of every company you own and tells you what changed and
-            why it matters, with the source passage behind every claim.
+          <p className="landing-tagline mt-3 text-primary">Know what you own.</p>
+          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground">
+            Behind every ticker is a company story. Follow the numbers, read what changed,
+            and go straight to the source.
           </p>
-          <div className="mt-8 max-w-lg">
+          <div className="landing-search mx-auto mt-8 max-w-xl text-left">
             <div className="mb-2 text-xs text-muted-foreground">Look up any company, no account needed</div>
             <CompanySearch placeholder="Search a ticker or company, e.g. NVDA" />
           </div>
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Button asChild size="lg">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+            <Button asChild variant="link">
               <Link to={signedIn ? "/home" : "/auth"}>
-                {signedIn ? "Open your portfolio" : "Sign up to track a portfolio"} <ArrowRight />
+                {signedIn ? "Open your portfolio" : "Create your free portfolio"} <ArrowRight />
               </Link>
             </Button>
           </div>
         </section>
-        <section className="py-8">
-          <h2>Company research</h2>
-          <div className="mt-6 grid gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="landing-companies border-y py-6">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2>Start with a company</h2>
+            <span className="text-xs text-muted-foreground">Public filings. No account needed.</span>
+          </div>
+          <div className="mt-4 grid gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
             {COMPANIES.map((c) => (
-              <Link key={c.ticker} to="/company/$ticker" params={{ticker:c.ticker}} className="group flex items-center justify-between gap-4 border-t py-5">
-                <span><span className="figure block text-xs text-muted-foreground">{c.ticker}</span><span className="mt-1 block font-display text-xl text-foreground">{c.name}</span></span>
-                <ArrowRight className="size-4 shrink-0 text-primary" />
+              <Link key={c.ticker} to="/company/$ticker" params={{ticker:c.ticker}} className="group flex items-center justify-between gap-4 border-t py-4">
+                <span className="flex items-center gap-3"><span className="figure flex h-10 w-14 shrink-0 items-center justify-center rounded-md bg-accent text-xs text-primary">{c.ticker}</span><span className="font-display text-lg text-foreground">{c.name}</span></span>
+                <ArrowUpRight className="size-4 shrink-0 text-primary" />
               </Link>
             ))}
           </div>
+        </section>
+        <section className="landing-preview py-12">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <div><p className="mb-2 text-xs text-primary">Inside Pulse Finance</p><h2>The numbers, in context.</h2></div>
+            <Button asChild variant="outline"><Link to="/company/$ticker" params={{ticker:"NVDA"}}>Explore NVIDIA <ArrowRight /></Link></Button>
+          </div>
+          <figure>
+            <Link to="/company/$ticker" params={{ticker:"NVDA"}} aria-label="Open NVIDIA company research" className="block overflow-hidden rounded-lg border bg-surface">
+              <img src={researchPreview.url} alt="Pulse Finance NVIDIA research page showing revenue, margins and historical financial charts" width="1152" height="1000" loading="lazy" className="block h-auto w-full" />
+            </Link>
+            <figcaption className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+              <span>App preview · NVIDIA · captured Nov 14, 2026</span><EvidenceBadge kind="fact" compact />
+              <a href="https://www.sec.gov/edgar/browse/?CIK=1045810" target="_blank" rel="noreferrer">SEC filings <ArrowUpRight className="inline size-3" /></a>
+            </figcaption>
+          </figure>
         </section>
       </main>
       <footer className="border-t py-6 text-center text-xs text-muted-foreground">
