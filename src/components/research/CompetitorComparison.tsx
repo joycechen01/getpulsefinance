@@ -60,7 +60,7 @@ function commonName(name:string,ticker:string){
   const cleaned=name.replace(/[,\s]+(INC|CORP|CORPORATION|CO|COMPANY|LTD|LLC|PLC|N\.?V\.?|S\.?A\.?|AG|SE|HOLDINGS?|GROUP)( CLASS [A-Z])?\.?$/gi,"").trim();
   if(!cleaned)return ticker;
   const pretty=cleaned.length<=4&&cleaned===cleaned.toUpperCase()?cleaned
-    :cleaned===cleaned.toUpperCase()&&cleaned.length>6?cleaned.toLowerCase().replace(/(^|\s)[a-z]/g,c=>c.toUpperCase())
+    :cleaned===cleaned.toUpperCase()&&cleaned.length>4?cleaned.toLowerCase().replace(/(^|\s)[a-z]/g,c=>c.toUpperCase())
     :cleaned;
   return pretty.length>14?ticker:pretty;
 }
