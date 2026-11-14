@@ -12,7 +12,7 @@ import { CitationItem } from "./SignalCard";
 export function StoryTimeline({ticker,fin,sourceUrl}:{ticker:string;fin:Financials|null;sourceUrl:string}) {
   const signals=useQuery(signalsQuery(ticker));
   const [selected,setSelected]=useState<string|null>(null);
-  const points=fin?series(fin.quarterly,"operatingMargin"):[];
+  const points=fin?series(fin.quarterly,"operatingMargin").slice(-20):[];
   const chart=points.filter(p=>p.value!=null).map(p=>({...p,time:Date.parse(p.end)}));
   const entries=signals.data?.ok?signals.data.signals:[];
   const active=entries.find(s=>s.id===selected);
@@ -28,13 +28,13 @@ export function StoryTimeline({ticker,fin,sourceUrl}:{ticker:string;fin:Financia
         <ResponsiveContainer width="100%" height="100%"><LineChart data={chart} margin={{top:16,right:16,left:0,bottom:8}}>
           <CartesianGrid vertical={false} stroke="var(--color-rule)"/>
           <XAxis dataKey="time" type="number" domain={[Math.min(...dates),Math.max(...dates, ...entries.flatMap(s=>s.citations.map(c=>Date.parse(c.filing_date))))]} scale="time" tickFormatter={v=>String(new Date(v).getUTCFullYear())} tick={{fill:"var(--color-muted-foreground)",fontSize:12}}/>
-          <YAxis tickFormatter={formatRatio} tick={{fill:"var(--color-muted-foreground)",fontSize:12}} width={60}/>
+          <YAxis tickFormatter={v=>formatRatio(Number(v))} tick={{fill:"var(--color-muted-foreground)",fontSize:12}} width={60}/>
           <Tooltip labelFormatter={v=>formatDate(new Date(Number(v)).toISOString().slice(0,10))} formatter={v=>[formatRatio(Number(v)),"Operating margin"]}/>
           <Line dataKey="value" stroke="var(--color-chart-1)" strokeWidth={2} dot={false} isAnimationActive={false}/>
           {entries.flatMap(s=>{
             const cite=s.citations.slice().sort((a,b)=>a.filing_date.localeCompare(b.filing_date))[0];
             if(!cite)return [];
-            return [<ReferenceLine key={s.id} x={Date.parse(cite.filing_date)} stroke="var(--color-chart-4)" strokeDasharray="3 4" label={{value:"◆",fill:"var(--color-chart-4)",position:"insideTop"}}/>];
+            return [<ReferenceLine key={s.id} x={Date.parse(cite.filing_date)} stroke="var(--color-chart-4)" strokeDasharray="3 4" label={<TimelinePin title={s.title} onSelect={()=>setSelected(s.id)}/>}/>];
           })}
         </LineChart></ResponsiveContainer>
       </div>
@@ -45,4 +45,9 @@ export function StoryTimeline({ticker,fin,sourceUrl}:{ticker:string;fin:Financia
     </ol>}
     {active&&<div className="border-l-2 border-teal pl-4"><div className="flex items-center justify-between gap-3"><h3>{active.title}</h3><EvidenceBadge kind="ai"/></div><p className="mt-2 text-sm">{active.what_happened}</p><ul className="mt-4 space-y-2">{active.citations.map(c=><CitationItem key={c.id} c={c}/>)}</ul><p className="mt-3 text-sm text-muted-foreground">What remains uncertain: {active.uncertain}</p></div>}
   </section>;
+}
+
+function TimelinePin({viewBox,title,onSelect}:{viewBox?:{x?:number;y?:number};title:string;onSelect:()=>void}) {
+  if(viewBox?.x==null||viewBox.y==null)return null;
+  return <foreignObject x={viewBox.x-14} y={viewBox.y} width={28} height={32}><Button variant="ghost" size="icon" className="size-7 text-chart-4" aria-label={`Open signal: ${title}`} title={title} onClick={onSelect}>◆</Button></foreignObject>;
 }

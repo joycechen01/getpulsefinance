@@ -3,6 +3,7 @@ import { ChevronDown, ExternalLink } from "lucide-react";
 import { useState } from "react";
 
 import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { Button } from "@/components/ui/button";
 import { InfoTip } from "@/components/InfoTip";
 import type { Citation, SignalView } from "@/lib/analysis.functions";
 import { SECTION_LABEL } from "@/lib/filing-sections";
@@ -20,11 +21,12 @@ export function CitationItem({ c, label }: { c: Citation; label?: string }) {
   const [open, setOpen] = useState(false);
   return (
     <li className="rounded-md border bg-background/40">
-      <button
+      <Button
+        variant="ghost"
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs"
+        className="flex h-auto w-full flex-wrap items-center justify-start gap-2 whitespace-normal px-3 py-2 text-left text-xs"
       >
         {label && <span className="font-mono text-primary">{label}</span>}
         <span className="font-mono">{c.form}</span>
@@ -32,7 +34,8 @@ export function CitationItem({ c, label }: { c: Citation; label?: string }) {
           {formatDate(c.filing_date)} · {SECTION_LABEL[c.section] ?? c.section}
         </span>
         <ChevronDown className={cn("ml-auto size-3.5 transition-transform", open && "rotate-180")} />
-      </button>
+      </Button>
+      {!open && c.url && <a href={c.url} target="_blank" rel="noreferrer" className="mx-3 mb-2 inline-flex items-center gap-1 text-xs">SEC source <ExternalLink className="size-3"/></a>}
       {open && (
         <div className="border-t px-3 py-2">
           <p className="text-sm leading-relaxed text-foreground/90">“{c.text}”</p>
