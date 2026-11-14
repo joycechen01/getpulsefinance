@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, FileSearch, GitCompare, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { CompanySearch } from "@/components/CompanySearch";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -70,10 +71,14 @@ function Landing() {
             Pulse Finance reads the SEC filings of every company you own and tells you what changed and
             why it matters, with the source passage behind every claim.
           </p>
-          <div className="mt-9 flex flex-wrap items-center gap-3">
+          <div className="mt-9 max-w-xl">
+            <div className="eyebrow mb-2">Look up any company, no account needed</div>
+            <CompanySearch placeholder="Search a ticker or company, e.g. NVDA" />
+          </div>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
             <Button asChild size="lg">
               <Link to={signedIn ? "/home" : "/auth"}>
-                {signedIn ? "Open your portfolio" : "Get started free"} <ArrowRight />
+                {signedIn ? "Open your portfolio" : "Sign up to track a portfolio"} <ArrowRight />
               </Link>
             </Button>
             <span className="text-sm text-muted-foreground">No buy or sell calls, just evidence.</span>

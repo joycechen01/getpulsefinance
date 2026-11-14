@@ -36,3 +36,4 @@ use the editor.
 - Metric extraction (tag fallbacks, YTD->quarter, Q4 derivation, gross-profit fallback, TTM) lives in pure `src/lib/metrics.ts` with tests; ratios are computed in code, never by AI.
 - SEC data is cached in shared tables (`companies`, `filings`, `financial_facts`) written only by server code via the admin client in `company.server.ts`; user tables (`profiles`, `holdings`) are owner-only via RLS.
 - Metric tooltip text comes only from `src/lib/glossary.ts`; never generated at runtime.
+- `/company/$ticker` is a public route (guest data via unauthenticated `getCompanyPublic`, shared SEC tables only); portfolio features and full metric groups require sign-in.
