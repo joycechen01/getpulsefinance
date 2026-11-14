@@ -64,7 +64,7 @@ export function SignalCard({ s, showTicker }: { s: SignalView; showTicker?: bool
           </Link>
         )}
         <span className="eyebrow">{s.category}</span>
-        {s.filed_date && <span className="text-xs text-muted-foreground">· {formatDate(s.filed_date)}</span>}
+        {s.filed_date && <span className="text-xs text-muted-foreground">· {s.source_form ? `${s.source_form} filed ` : ""}{formatDate(s.filed_date)}</span>}
         <span className="ml-auto inline-flex items-center gap-2">
           <span className={cn("inline-flex items-center gap-1 rounded-sm border px-1.5 py-px font-mono text-[10px] uppercase", CONF_TONE[s.confidence])}>
             {s.confidence} confidence

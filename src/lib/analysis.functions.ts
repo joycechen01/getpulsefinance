@@ -25,6 +25,7 @@ export type SignalView = {
   ticker: string;
   accession: string;
   filed_date: string | null;
+  source_form: string | null;
   category: string;
   title: string;
   what_happened: string;
@@ -70,12 +71,17 @@ export async function signalViews(sb: Admin, ciks: number[], tickers: Map<number
   if (!ciks.length) return [];
   const { data } = await sb.from("signals").select("*").in("cik", ciks).order("filed_date", { ascending: false }).limit(60);
   const cites = await citationsFor(sb, [...new Set((data ?? []).flatMap((s) => s.passage_ids))]);
-  return (data ?? []).map((s) => ({
+  return (data ?? []).map((s) => {
+    const citations = s.passage_ids.map((id) => cites.get(id)).filter((c): c is Citation => !!c);
+    // Date a signal by the newest filing it cites (e.g. an 8-K filed after the analyzed 10-Q).
+    const newest = citations.filter((c) => c.filing_date).sort((a, b) => b.filing_date.localeCompare(a.filing_date))[0];
+    return {
     id: s.id,
     cik: s.cik,
     ticker: tickers.get(s.cik) ?? "",
     accession: s.accession,
-    filed_date: s.filed_date,
+    filed_date: newest?.filing_date ?? s.filed_date,
+    source_form: newest?.form ?? null,
     category: s.category,
     title: s.title,
     what_happened: s.what_happened,
@@ -85,8 +91,9 @@ export async function signalViews(sb: Admin, ciks: number[], tickers: Map<number
     uncertain: s.uncertain,
     confidence: s.confidence,
     metric_note: s.metric_note,
-    citations: s.passage_ids.map((id) => cites.get(id)).filter((c): c is Citation => !!c),
-  }));
+    citations,
+    };
+  }).sort((a, b) => (b.filed_date ?? "").localeCompare(a.filed_date ?? ""));
 }
 
 async function resolve(ticker: string) {
