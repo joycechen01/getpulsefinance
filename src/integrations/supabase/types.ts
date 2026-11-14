@@ -104,6 +104,35 @@ export type Database = {
         }
         Relationships: []
       }
+      filing_research: {
+        Row: {
+          accession: string
+          cik: number
+          created_at: string
+          data: Json
+        }
+        Insert: {
+          accession: string
+          cik: number
+          created_at?: string
+          data: Json
+        }
+        Update: {
+          accession?: string
+          cik?: number
+          created_at?: string
+          data?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "filing_research_accession_fkey"
+            columns: ["accession"]
+            isOneToOne: true
+            referencedRelation: "filings"
+            referencedColumns: ["accession"]
+          },
+        ]
+      }
       filings: {
         Row: {
           accession: string

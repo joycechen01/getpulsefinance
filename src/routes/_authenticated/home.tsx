@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { CompanySearch } from "@/components/CompanySearch";
 import { DevelopmentsPanel } from "@/components/research/DevelopmentsPanel";
+import { SharedRisksPanel } from "@/components/research/SharedRisksPanel";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { InfoTip } from "@/components/InfoTip";
 import { Sparkline } from "@/components/Sparkline";
@@ -96,6 +97,7 @@ function Home() {
       </section>
 
       <HoldingsTable rows={data.holdings} quotes={quotes.data} quotesLoading={quotes.isLoading} />
+      <SharedRisksPanel tickers={tickers} />
 
       <div className="grid gap-8">
         <section className="panel p-5">

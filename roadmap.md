@@ -1,3 +1,7 @@
 - [x] Apply saved colors, fonts, logo and page-title branding.
 - [x] Verify the refreshed public and signed-in pages.
 - [x] Request publication of the updated branding; deployment completion is pending.
+- [x] Build SEC-backed company story timeline (five-year margin history; signal dates limited to reviewed source filings).
+- [x] Build comparison with up to five named competitors and five TTM metrics.
+- [x] Build shared portfolio risk disclosures with source passages.
+- [x] Test Phase 3 and verify the signed-in flow for all four demo companies.
