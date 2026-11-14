@@ -7,7 +7,7 @@ import type { Json } from "@/integrations/supabase/types";
 import { aiObject } from "./ai.server";
 import { getFilingHtml } from "./edgar.server";
 import { extractSections, SECTION_LABEL, type SectionId } from "./filing-sections";
-import { latestWithYoY, valueOf, type Financials } from "./metrics";
+import { latestWithYoY, type CalcId, type Financials } from "./metrics";
 import { diffSection, type Change } from "./redline";
 
 export type FilingRow = {
@@ -116,7 +116,7 @@ function metricContext(fin: Financials | null): string {
   if (!fin) return "No structured financial data.";
   const rows = fin.quarterly;
   const lines: string[] = [];
-  const add = (label: string, id: Parameters<typeof valueOf>[1], pct = false) => {
+  const add = (label: string, id: CalcId, pct = false) => {
     const l = latestWithYoY(rows, id);
     if (!l) return;
     const f = (v: number | null) => (v == null ? "n/a" : pct ? `${(v * 100).toFixed(1)}%` : `${(v / 1e6).toFixed(0)}M`);
