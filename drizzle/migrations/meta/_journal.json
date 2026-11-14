@@ -22,6 +22,13 @@
       "when": 1794687898802,
       "tag": "0002_phase3_filing_research",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794688627948,
+      "tag": "0003_restrict_filing_research_cache_access",
+      "breakpoints": true
     }
   ]
 }
