@@ -139,7 +139,12 @@ function HoldingsTable({
   return (
     <section className="overflow-hidden border-y bg-surface">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4">
-        <h2 className="text-2xl">Holdings</h2>
+        <div>
+          <h2 className="text-2xl">Holdings</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Select a company to explore its metrics, filing changes, signals, competitors, news, and Ask.
+          </p>
+        </div>
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <EvidenceBadge kind="market" compact />
           {quotes?.available
