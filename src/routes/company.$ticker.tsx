@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ClientOnly, createFileRoute } from "@tanstack/react-router";
+import { ClientOnly, createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Check, ExternalLink, Loader2, Plus } from "lucide-react";
+import { Check, ExternalLink, Loader2, Lock, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -11,6 +11,9 @@ import { MetricChart, type ChartPoint } from "@/components/MetricChart";
 import { Segmented } from "@/components/Segmented";
 import { Sparkline } from "@/components/Sparkline";
 import { Button } from "@/components/ui/button";
+import { CompanySearch } from "@/components/CompanySearch";
+import { Logo } from "@/components/Logo";
+import { supabase } from "@/integrations/supabase/client";
 import { companyQuery } from "@/lib/edgar-queries";
 import { formatDate, formatMoney, monthName, secDocUrl } from "@/lib/format";
 import { GROUPS, HEADLINE, fmtChange, fmtValue, isCalculated, type MetricSpec } from "@/lib/metric-config";
@@ -20,14 +23,60 @@ import { cn } from "@/lib/utils";
 
 type Freq = "quarterly" | "annual";
 
-export const Route = createFileRoute("/_authenticated/company/$ticker")({
-  head: ({ params }) => ({ meta: [{ title: `${params.ticker.toUpperCase()} research — Pulse Finance` }] }),
-  component: CompanyPage,
+export const Route = createFileRoute("/company/$ticker")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getSession();
+    return { signedIn: !!data.session };
+  },
+  head: ({ params }) => {
+    const t = params.ticker.toUpperCase();
+    const title = `${t} financials from SEC filings — Pulse Finance`;
+    const description = `Revenue, margins, cash flow and recent SEC filings for ${t}, straight from EDGAR.`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary" },
+      ],
+    };
+  },
+  component: CompanyLayout,
 });
 
-function CompanyPage() {
+function CompanyLayout() {
+  const { signedIn } = Route.useRouteContext();
+  return (
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
+        <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:px-6">
+          <Link to={signedIn ? "/home" : "/"} aria-label="Pulse Finance home">
+            <Logo />
+          </Link>
+          <div className="ml-auto hidden w-80 md:block">
+            <CompanySearch placeholder="Search any ticker…" />
+          </div>
+          <Button asChild size="sm" variant={signedIn ? "ghost" : "default"}>
+            <Link to={signedIn ? "/home" : "/auth"}>{signedIn ? "Portfolio" : "Sign up free"}</Link>
+          </Button>
+        </div>
+        <div className="px-4 pb-3 md:hidden">
+          <CompanySearch placeholder="Search any ticker…" />
+        </div>
+      </header>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        <CompanyPage signedIn={signedIn} />
+      </main>
+    </div>
+  );
+}
+
+function CompanyPage({ signedIn }: { signedIn: boolean }) {
   const { ticker } = Route.useParams();
-  const { data, isLoading, error } = useQuery(companyQuery(ticker));
+  const { data, isLoading, error } = useQuery(companyQuery(ticker, signedIn));
   const [freq, setFreq] = useState<Freq>("quarterly");
 
   if (isLoading)
@@ -84,7 +133,15 @@ function CompanyPage() {
               { value: "annual", label: "Annual" },
             ]}
           />
-          <HoldButton ticker={company.ticker} held={held} />
+          {signedIn ? (
+            <HoldButton ticker={company.ticker} held={held} />
+          ) : (
+            <Button asChild variant="outline">
+              <Link to="/auth">
+                <Plus /> Add to portfolio
+              </Link>
+            </Button>
+          )}
         </div>
       </header>
 
@@ -100,13 +157,32 @@ function CompanyPage() {
             ))}
           </section>
 
-          <TrendExplorer rows={rows} currency={cur} />
-
-          <section className="grid gap-5 lg:grid-cols-2">
-            {GROUPS.map((g) => (
-              <MetricGroup key={g.title} title={g.title} specs={g.metrics} rows={rows} currency={cur} freq={freq} />
-            ))}
-          </section>
+          {signedIn ? (
+            <>
+              <TrendExplorer rows={rows} currency={cur} />
+              <section className="grid gap-5 lg:grid-cols-2">
+                {GROUPS.map((g) => (
+                  <MetricGroup key={g.title} title={g.title} specs={g.metrics} rows={rows} currency={cur} freq={freq} />
+                ))}
+              </section>
+            </>
+          ) : (
+            <section className="panel flex flex-wrap items-center justify-between gap-4 p-6">
+              <div className="flex items-start gap-3">
+                <Lock className="mt-1 size-4 text-primary" />
+                <div>
+                  <h2 className="text-2xl">See the full picture with a free account</h2>
+                  <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+                    Build a portfolio, monitor several companies side by side, explore interactive trend charts and every
+                    metric group (growth, profitability, cash, quality of earnings, balance sheet, per share).
+                  </p>
+                </div>
+              </div>
+              <Button asChild>
+                <Link to="/auth">Sign up free</Link>
+              </Button>
+            </section>
+          )}
         </>
       )}
 

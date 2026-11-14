@@ -252,3 +252,38 @@ export const getQuotes = createServerFn({ method: "GET" })
     }
     return { available: true as const, quotes };
   });
+
+/** Public, no sign-in: basic company info from the shared SEC cache. */
+export const getCompanyPublic = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ ticker: tickerSchema }).parse(d))
+  .handler(async ({ data }): Promise<CompanyBundle> => {
+    const { findTicker } = await import("./edgar.server");
+    const { ensureCompany } = await import("./company.server");
+    const { supabaseAdmin: sb } = await import("@/integrations/supabase/client.server");
+    try {
+      const match = await findTicker(data.ticker);
+      if (!match) return { ok: false, error: `No SEC-registered company found for “${data.ticker.toUpperCase()}”.` };
+      await ensureCompany(match.cik, match.ticker, match.name);
+      const [c, f, fl] = await Promise.all([
+        sb.from("companies").select("cik,ticker,name,sic_description,exchanges,fiscal_year_end").eq("cik", match.cik).single(),
+        sb.from("financial_facts").select("data").eq("cik", match.cik).maybeSingle(),
+        sb
+          .from("filings")
+          .select("accession,form,filing_date,report_date,primary_document,description,items")
+          .eq("cik", match.cik)
+          .order("filing_date", { ascending: false })
+          .limit(60),
+      ]);
+      if (c.error || !c.data) return { ok: false, error: "Company data isn’t available yet." };
+      return {
+        ok: true,
+        company: c.data,
+        financials: (f.data?.data as unknown as Financials) ?? null,
+        filings: fl.data ?? [],
+        held: false,
+      };
+    } catch (e) {
+      console.error("getCompanyPublic failed", e);
+      return { ok: false, error: "The SEC data service didn’t respond. Please try again shortly." };
+    }
+  });

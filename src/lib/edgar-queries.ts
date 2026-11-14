@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import { searchCompanies } from "./edgar.functions";
-import { getCompany, getPortfolio, getQuotes } from "./portfolio.functions";
+import { getCompany, getCompanyPublic, getPortfolio, getQuotes } from "./portfolio.functions";
 
 export const searchQuery = (q: string) =>
   queryOptions({
@@ -14,10 +14,10 @@ export const searchQuery = (q: string) =>
 export const portfolioQuery = () =>
   queryOptions({ queryKey: ["portfolio"], queryFn: () => getPortfolio(), staleTime: 60 * 1000 });
 
-export const companyQuery = (ticker: string) =>
+export const companyQuery = (ticker: string, signedIn = true) =>
   queryOptions({
-    queryKey: ["company", ticker.toUpperCase()],
-    queryFn: () => getCompany({ data: { ticker } }),
+    queryKey: ["company", ticker.toUpperCase(), signedIn ? "user" : "guest"],
+    queryFn: () => (signedIn ? getCompany({ data: { ticker } }) : getCompanyPublic({ data: { ticker } })),
     staleTime: 10 * 60 * 1000,
   });
 
