@@ -1,3 +1,3 @@
 - [x] Apply saved colors, fonts, logo and page-title branding.
 - [x] Verify the refreshed public and signed-in pages.
-- [ ] Publish the updated branding.
+- [x] Request publication of the updated branding; deployment completion is pending.
