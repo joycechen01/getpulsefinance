@@ -22,6 +22,6 @@
 - [x] Replace the company story operating-margin graph with a simple dated, cited timeline; verified six NVIDIA entries, expandable evidence and desktop/mobile.
 
 ## Follow-up plan (Nov 14)
-- [ ] Competitor: select all, compact 3-per-row cards, stacked trend charts
-- [ ] Replace Story timeline tab with News (Finnhub)
-- [ ] Ask under key metrics on Overview; portfolio-wide Ask
+- [x] Competitor: select all, compact 3-per-row cards, stacked trend charts
+- [x] Replace Story timeline tab with News (Finnhub)
+- [x] Ask under key metrics on Overview; portfolio-wide Ask
