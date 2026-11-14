@@ -59,7 +59,7 @@ describe("SEC company facts parsing", () => {
         f({ end: "2024-12-31", val: 700, form: "10-K", fp: "FY" }),
       ]),
     );
-    expect(p.annual[0].assets).toBe(700);
+    expect(p.annual[0]?.assets).toBe(700);
   });
 
   it("labels a September fiscal year's December quarter as Q1 of the next fiscal year", () => {

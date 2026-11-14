@@ -7,7 +7,7 @@ export type TickerEntry = { cik: number; ticker: string; name: string };
 const DEFAULT_UA = "Ledgerline SEC charts app (contact: ledgerline-app@proton.me)";
 
 function userAgent() {
-  return process.env.SEC_USER_AGENT || DEFAULT_UA;
+  return process.env["SEC_USER_AGENT"] || DEFAULT_UA;
 }
 
 async function secFetch(url: string): Promise<Response> {

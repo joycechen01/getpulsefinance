@@ -16,7 +16,7 @@ type Range = "3y" | "5y" | "10y" | "all";
 const RANGES: Range[] = ["3y", "5y", "10y", "all"];
 
 export const Route = createFileRoute("/")({
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { ticker?: string; freq?: "annual"; range?: Range } => ({
     ticker:
       typeof s["ticker"] === "string" && s["ticker"].trim()
         ? s["ticker"].trim().toUpperCase().slice(0, 12)

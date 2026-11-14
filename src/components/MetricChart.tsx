@@ -31,8 +31,8 @@ function ChartTooltip({
   metric,
   currency,
 }: TooltipProps<number, string> & { metric: MetricConfig; currency: string }) {
-  if (!active || !payload?.length) return null;
-  const row = payload[0].payload as PeriodRow;
+  const row = payload?.[0]?.payload as PeriodRow | undefined;
+  if (!active || !row) return null;
   const value = row[metric.key];
   const growth = formatPct(row[`${metric.key}YoY` as const]);
   const derived =

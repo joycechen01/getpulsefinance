@@ -105,7 +105,7 @@ export function fiscalPeriodOf(
 }
 
 function getConcept(json: CompanyFactsJson, id: string): Concept | undefined {
-  const [tax, name] = id.split(":");
+  const [tax = "", name = ""] = id.split(":");
   return json.facts?.[tax]?.[name];
 }
 
@@ -164,6 +164,10 @@ type FlowSeries = {
 };
 
 const qKey = (fy: number, q: number) => `${fy}-Q${q}`;
+const parseQKey = (k: string): [number, number] => {
+  const [fy = "0", q = "0"] = k.split("-Q");
+  return [Number(fy), Number(q)];
+};
 
 function detectFyEndMonth(json: CompanyFactsJson, currency: string): number {
   let latest: Fact | undefined;
@@ -308,7 +312,7 @@ export function parseCompanyFacts(json: CompanyFactsJson): ParsedFinancials {
   const qRow = (k: string) => {
     let r = qRows.get(k);
     if (!r) {
-      const [fy, q] = k.split("-Q").map(Number);
+      const [fy, q] = parseQKey(k);
       r = emptyRow(k, `Q${q} FY${String(fy).slice(-2)}`, fy, q);
       qRows.set(k, r);
     }
@@ -353,7 +357,7 @@ export function parseCompanyFacts(json: CompanyFactsJson): ParsedFinancials {
     r.end ||= v.end;
   }
   for (const [k, v] of assets.quarterly) {
-    const [fy, q] = k.split("-Q").map(Number);
+    const [fy, q] = parseQKey(k);
     if (q !== 4) continue;
     const r = aRow(fy);
     r.assets = v.val;

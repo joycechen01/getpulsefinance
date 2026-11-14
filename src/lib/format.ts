@@ -19,6 +19,6 @@ export const monthName = (m: number) => MONTHS[(m - 1 + 12) % 12];
 
 export function formatDate(d: string) {
   if (!d) return "";
-  const [y, m, day] = d.split("-").map(Number);
-  return `${MONTHS[m - 1]} ${day}, ${y}`;
+  const [y = 0, m = 1, day = 1] = d.split("-").map(Number);
+  return `${MONTHS[m - 1] ?? ""} ${day}, ${y}`;
 }
