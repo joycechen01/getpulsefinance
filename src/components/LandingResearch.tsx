@@ -10,6 +10,7 @@ import { fmtChange, fmtValue } from "@/lib/metric-config";
 import { secDocUrl } from "@/lib/format";
 import { getChangesPublic } from "@/lib/analysis.functions";
 import type { Change } from "@/lib/redline";
+import { useReveal } from "@/lib/use-reveal";
 import { cn } from "@/lib/utils";
 
 const COMPANIES = [

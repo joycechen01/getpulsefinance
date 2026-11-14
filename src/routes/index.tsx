@@ -7,6 +7,7 @@ import { LandingResearch } from "@/components/LandingResearch";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useReveal } from "@/lib/use-reveal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
