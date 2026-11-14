@@ -39,3 +39,5 @@ use the editor.
 - `/company/$ticker` is a public route (guest data via unauthenticated `getCompanyPublic`, shared SEC tables only); portfolio features and full metric groups require sign-in.
 - Filing text: section extraction (`filing-sections.ts`) and change tagging (`redline.ts`) are pure, tested modules; passages, redlines and signals are cached once per filing in shared tables by `analysis.server.ts`, so AI runs at most once per filing.
 - All AI calls go through `src/lib/ai.server.ts` (streamed, strict schema); AI only cites passage ids it was given, never computes figures.
+
+- Keep shared visual roles in the light-only semantic theme and shared Logo component so brand updates propagate without changing financial logic.

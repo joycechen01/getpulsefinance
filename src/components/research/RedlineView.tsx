@@ -15,10 +15,10 @@ import type { Change, ChangeTag } from "@/lib/redline";
 import { cn } from "@/lib/utils";
 
 const TAG_TONE: Record<ChangeTag, string> = {
-  new: "text-positive border-positive/40 bg-positive/10",
-  expanded: "text-primary border-primary/40 bg-primary/10",
-  removed: "text-negative border-negative/40 bg-negative/10",
-  reworded: "text-muted-foreground border-border bg-muted",
+  new: "text-surface border-teal bg-teal",
+  expanded: "text-accent-foreground border-accent bg-accent",
+  removed: "text-foreground border-foreground bg-surface",
+  reworded: "text-muted-foreground border-transparent bg-transparent",
 };
 
 type Sec = "all" | "risk" | "mdna" | "competition";
@@ -132,7 +132,7 @@ function Highlighted({ text, added }: { text: string; added: string[] }) {
     <>
       {parts.map((p, i) =>
         set.has(p) ? (
-          <mark key={i} className="rounded-sm bg-positive/15 px-0.5 text-foreground">
+          <mark key={i} className="rounded-sm bg-accent px-0.5 text-foreground">
             {p}{" "}
           </mark>
         ) : (
@@ -154,7 +154,7 @@ function ChangeRow({ c }: { c: Change }) {
         <div>
           <div className="eyebrow mb-1">Prior filing</div>
           {c.priorText ? (
-            <p className={cn("text-sm leading-relaxed text-muted-foreground", c.tag === "removed" && "line-through decoration-negative/60")}>
+            <p className={cn("text-sm leading-relaxed text-muted-foreground", c.tag === "removed" && "line-through decoration-foreground")}>
               {c.priorText}
             </p>
           ) : (
@@ -165,7 +165,7 @@ function ChangeRow({ c }: { c: Change }) {
           <div className="eyebrow mb-1">Latest filing</div>
           {c.text ? (
             <p className="text-sm leading-relaxed">
-              {c.tag === "new" ? <mark className="rounded-sm bg-positive/15 text-foreground">{c.text}</mark> : <Highlighted text={c.text} added={c.added} />}
+              {c.tag === "new" ? <mark className="rounded-sm bg-accent text-foreground">{c.text}</mark> : <Highlighted text={c.text} added={c.added} />}
             </p>
           ) : (
             <p className="text-sm italic text-muted-foreground">Removed</p>

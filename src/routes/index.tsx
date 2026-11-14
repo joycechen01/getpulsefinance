@@ -10,13 +10,13 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Pulse Finance — track the business, not just the stock" },
+      { title: "Pulse Finance — Know what you own." },
       {
         name: "description",
         content:
           "Pulse Finance monitors the SEC filings of the companies you own, compares them with history, and explains what changed.",
       },
-      { property: "og:title", content: "Pulse Finance — track the business, not just the stock" },
+      { property: "og:title", content: "Pulse Finance — Know what you own." },
       {
         property: "og:description",
         content: "An AI research analyst that reads every SEC filing for your portfolio.",
@@ -53,21 +53,22 @@ function Landing() {
   }, []);
   return (
     <div className="min-h-screen hero-glow">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
+      <header className="flex items-center justify-between border-b bg-surface px-4 py-4 md:px-6">
         <Logo />
         <Button asChild variant={signedIn ? "default" : "ghost"} size="sm">
           <Link to={signedIn ? "/home" : "/auth"}>{signedIn ? "Open portfolio" : "Sign in"}</Link>
         </Button>
       </header>
-      <main className="mx-auto max-w-6xl px-5 sm:px-8">
-        <section className="animate-rise pt-20 pb-24 sm:pt-28">
+      <main className="mx-auto max-w-[1120px] px-4 md:px-6">
+        <section className="animate-rise pt-12 pb-12">
           <div className="eyebrow flex items-center gap-2">
-            <span className="size-1.5 rounded-full bg-primary animate-pulse-dot" /> SEC-grounded research
+            SEC-grounded research
           </div>
           <h1 className="mt-5 max-w-3xl text-5xl leading-[1.05] sm:text-7xl">
-            Don’t just track stock prices. <em className="text-primary">Track the business.</em>
+            Pulse Finance
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-muted-foreground">
+          <p className="mt-4 font-display text-xl text-foreground">Know what you own.</p>
+          <p className="mt-4 max-w-xl text-[15px] text-muted-foreground">
             Pulse Finance reads the SEC filings of every company you own and tells you what changed and
             why it matters, with the source passage behind every claim.
           </p>
@@ -81,12 +82,12 @@ function Landing() {
                 {signedIn ? "Open your portfolio" : "Sign up to track a portfolio"} <ArrowRight />
               </Link>
             </Button>
-            <span className="text-sm text-muted-foreground">No buy or sell calls, just evidence.</span>
+            <span className="text-sm text-muted-foreground">Research grounded in evidence.</span>
           </div>
         </section>
-        <section className="grid gap-4 pb-24 sm:grid-cols-3">
+        <section className="grid gap-4 pb-12 sm:grid-cols-3">
           {FEATURES.map((f) => (
-            <div key={f.title} className="panel p-6">
+            <div key={f.title} className="panel p-4">
               <f.icon className="size-5 text-primary" />
               <h2 className="mt-4 text-2xl">{f.title}</h2>
               <p className="mt-2 text-sm text-muted-foreground">{f.text}</p>

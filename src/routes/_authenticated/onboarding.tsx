@@ -12,7 +12,14 @@ import { portfolioQuery } from "@/lib/edgar-queries";
 import { addHolding, loadDemoPortfolio, removeHolding } from "@/lib/portfolio.functions";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
-  head: () => ({ meta: [{ title: "Set up your portfolio — Pulse Finance" }] }),
+  head: () => ({ meta: [
+    { title: "Set up your portfolio — Pulse Finance" },
+    { name: "description", content: "Choose the companies you own to follow their SEC filings with Pulse Finance." },
+    { property: "og:title", content: "Set up your portfolio — Pulse Finance" },
+    { property: "og:description", content: "Choose the companies you own to follow their SEC filings with Pulse Finance." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: Onboarding,
 });
 

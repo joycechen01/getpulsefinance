@@ -11,7 +11,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { profileQuery } from "@/lib/profile";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Settings — Pulse Finance" }] }),
+  head: () => ({ meta: [
+    { title: "Account settings — Pulse Finance" },
+    { name: "description", content: "Manage your Pulse Finance account and earnings digest preferences." },
+    { property: "og:title", content: "Account settings — Pulse Finance" },
+    { property: "og:description", content: "Manage your Pulse Finance account and earnings digest preferences." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: SettingsPage,
 });
 

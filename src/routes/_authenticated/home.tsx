@@ -22,7 +22,14 @@ import { profileQuery } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/home")({
-  head: () => ({ meta: [{ title: "Portfolio — Pulse Finance" }] }),
+  head: () => ({ meta: [
+    { title: "Your portfolio — Pulse Finance" },
+    { name: "description", content: "Follow the companies you own with SEC filings and evidence-backed research." },
+    { property: "og:title", content: "Your portfolio — Pulse Finance" },
+    { property: "og:description", content: "Follow the companies you own with SEC filings and evidence-backed research." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: Home,
 });
 
@@ -63,7 +70,7 @@ function Home() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="eyebrow">Your portfolio · {data.holdings.length} holdings</div>
-          <h1 className="mt-1 text-4xl sm:text-5xl">What’s changing in your businesses</h1>
+          <h1 className="mt-1 text-4xl sm:text-5xl">Your portfolio</h1>
         </div>
         <div className="w-full sm:w-80">
           <CompanySearch onPick={onPick} placeholder="Add a holding…" />
@@ -90,7 +97,7 @@ function Home() {
 
       <HoldingsTable rows={data.holdings} quotes={quotes.data} quotesLoading={quotes.isLoading} />
 
-      <div className="grid gap-5 lg:grid-cols-[2fr_1fr]">
+      <div className="grid gap-8">
         <section className="panel p-5">
           <h2 className="text-2xl">Recent SEC filing activity</h2>
           <ul className="mt-4 divide-y">
