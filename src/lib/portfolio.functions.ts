@@ -1,6 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 import type { Financials } from "./metrics";
@@ -10,7 +13,7 @@ const tickerSchema = z.string().trim().min(1).max(12);
 export const DEMO_TICKERS = ["NVDA", "CRWD", "INTC", "TSLA"];
 
 async function addOne(
-  supabase: Parameters<Parameters<ReturnType<typeof createServerFn>["handler"]>[0]>[0] extends never ? never : any,
+  supabase: SupabaseClient<Database>,
   userId: string,
   ticker: string,
   extra: { shares?: number | null; avgPrice?: number | null } = {},
