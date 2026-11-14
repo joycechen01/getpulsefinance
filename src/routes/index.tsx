@@ -52,7 +52,7 @@ function Landing() {
     supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
   }, []);
   return (
-    <div className="min-h-screen hero-glow">
+    <div className="landing-page min-h-screen">
       <header className="flex items-center justify-between border-b bg-surface px-4 py-4 md:px-6">
         <Logo />
         <Button asChild variant={signedIn ? "default" : "ghost"} size="sm">
@@ -61,19 +61,19 @@ function Landing() {
       </header>
       <main className="mx-auto max-w-[1120px] px-4 md:px-6">
         <section className="animate-rise pt-12 pb-12">
-          <div className="eyebrow flex items-center gap-2">
+          <div className="mb-4 text-xs text-teal">
             SEC-grounded research
           </div>
-          <h1 className="mt-5 max-w-3xl text-5xl leading-[1.05] sm:text-7xl">
+          <h1 className="max-w-xl font-display font-medium">
             Pulse Finance
           </h1>
-          <p className="mt-4 font-display text-xl text-foreground">Know what you own.</p>
-          <p className="mt-4 max-w-xl text-[15px] text-muted-foreground">
+          <p className="mt-2 font-sans text-[15px] font-medium text-foreground">Know what you own.</p>
+          <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-muted-foreground">
             Pulse Finance reads the SEC filings of every company you own and tells you what changed and
             why it matters, with the source passage behind every claim.
           </p>
-          <div className="mt-9 max-w-xl">
-            <div className="eyebrow mb-2">Look up any company, no account needed</div>
+          <div className="mt-8 max-w-lg">
+            <div className="mb-2 text-xs text-muted-foreground">Look up any company, no account needed</div>
             <CompanySearch placeholder="Search a ticker or company, e.g. NVDA" />
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -82,15 +82,14 @@ function Landing() {
                 {signedIn ? "Open your portfolio" : "Sign up to track a portfolio"} <ArrowRight />
               </Link>
             </Button>
-            <span className="text-sm text-muted-foreground">Research grounded in evidence.</span>
           </div>
         </section>
         <section className="grid gap-4 pb-12 sm:grid-cols-3">
           {FEATURES.map((f) => (
             <div key={f.title} className="panel p-4">
               <f.icon className="size-5 text-primary" />
-              <h2 className="mt-4 text-2xl">{f.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{f.text}</p>
+              <h2 className="landing-card-title mt-4">{f.title}</h2>
+              <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{f.text}</p>
             </div>
           ))}
         </section>

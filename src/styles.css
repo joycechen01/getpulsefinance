@@ -215,3 +215,11 @@ main.max-w-7xl, main.max-w-6xl, header > .max-w-7xl { max-width: 1120px; }
   .grid.sm\:grid-cols-2 { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* Landing typography: one editorial headline, quiet sans-serif supporting roles. */
+.landing-page .landing-card-title {
+  font-family: var(--font-sans);
+  font-size: 14px !important;
+  font-weight: 500;
+  line-height: 1.6;
+}
