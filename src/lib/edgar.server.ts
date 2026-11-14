@@ -27,7 +27,10 @@ export async function getTickers(): Promise<TickerEntry[]> {
     console.error(`SEC ticker list failed [${res.status}]: ${body.slice(0, 300)}`);
     throw new Error(`SEC ticker list unavailable (${res.status})`);
   }
-  const raw = (await res.json()) as Record<string, { cik_str: number; ticker: string; title: string }>;
+  const raw = (await res.json()) as Record<
+    string,
+    { cik_str: number; ticker: string; title: string }
+  >;
   const list = Object.values(raw).map((r) => ({ cik: r.cik_str, ticker: r.ticker, name: r.title }));
   tickerCache = { at: Date.now(), list };
   return list;

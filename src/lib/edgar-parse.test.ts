@@ -26,7 +26,14 @@ const fy2024 = [
   f({ start: "2024-01-01", end: "2024-03-31", val: 10 }),
   f({ start: "2024-04-01", end: "2024-06-30", val: 20 }),
   f({ start: "2024-07-01", end: "2024-09-30", val: 30 }),
-  f({ start: "2024-01-01", end: "2024-12-31", val: 100, form: "10-K", fp: "FY", filed: "2025-02-01" }),
+  f({
+    start: "2024-01-01",
+    end: "2024-12-31",
+    val: 100,
+    form: "10-K",
+    fp: "FY",
+    filed: "2025-02-01",
+  }),
 ];
 
 describe("SEC company facts parsing", () => {
@@ -39,7 +46,10 @@ describe("SEC company facts parsing", () => {
 
   it("uses the latest-filed value when a period is restated", () => {
     const p = parseCompanyFacts(
-      company([...fy2024, f({ start: "2024-01-01", end: "2024-03-31", val: 12, filed: "2025-05-01" })]),
+      company([
+        ...fy2024,
+        f({ start: "2024-01-01", end: "2024-03-31", val: 12, filed: "2025-05-01" }),
+      ]),
     );
     expect(p.quarterly.find((r) => r.quarter === 1)!.revenue).toBe(12);
   });

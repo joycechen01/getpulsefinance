@@ -16,7 +16,9 @@ type Range = "3y" | "5y" | "10y" | "all";
 const RANGES: Range[] = ["3y", "5y", "10y", "all"];
 
 export const Route = createFileRoute("/")({
-  validateSearch: (s: Record<string, unknown>): { ticker?: string; freq?: "annual"; range?: Range } => ({
+  validateSearch: (
+    s: Record<string, unknown>,
+  ): { ticker?: string | undefined; freq?: "annual" | undefined; range?: Range | undefined } => ({
     ticker:
       typeof s["ticker"] === "string" && s["ticker"].trim()
         ? s["ticker"].trim().toUpperCase().slice(0, 12)
@@ -135,7 +137,8 @@ function Index() {
     );
   }
 
-  const quarterlyUsable = data.quarterly.filter((r) => r.revenue != null || r.netIncome != null).length >= 4;
+  const quarterlyUsable =
+    data.quarterly.filter((r) => r.revenue != null || r.netIncome != null).length >= 4;
   const effFreq: Freq = quarterlyUsable ? freq : "annual";
   const all = effFreq === "quarterly" ? data.quarterly : data.annual;
   const years = range === "all" ? Infinity : Number(range.replace("y", ""));
@@ -145,7 +148,9 @@ function Index() {
     navigate({
       search: (prev) => ({
         ...prev,
-        ...("freq" in patch ? { freq: patch.freq === "annual" ? ("annual" as const) : undefined } : {}),
+        ...("freq" in patch
+          ? { freq: patch.freq === "annual" ? ("annual" as const) : undefined }
+          : {}),
         ...("range" in patch ? { range: patch.range === "10y" ? undefined : patch.range } : {}),
       }),
       replace: true,
@@ -160,8 +165,8 @@ function Index() {
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <div className="eyebrow">
-              {data.ticker} · CIK {cikPadded} · Fiscal year ends {monthName(data.fiscalYearEndMonth)} ·{" "}
-              {data.currency}
+              {data.ticker} · CIK {cikPadded} · Fiscal year ends{" "}
+              {monthName(data.fiscalYearEndMonth)} · {data.currency}
             </div>
             <h1 className="mt-2 text-4xl leading-tight font-medium tracking-tight sm:text-5xl">
               {data.name}
@@ -181,7 +186,10 @@ function Index() {
               label="Range"
               value={range}
               onChange={(v) => setSearch({ range: v })}
-              options={RANGES.map((r) => ({ value: r, label: r === "all" ? "All" : r.toUpperCase() }))}
+              options={RANGES.map((r) => ({
+                value: r,
+                label: r === "all" ? "All" : r.toUpperCase(),
+              }))}
             />
           </div>
         </div>
@@ -207,8 +215,12 @@ function Index() {
 
       <footer className="mt-10 flex flex-col gap-2 border-t pt-5 text-xs text-muted-foreground sm:flex-row sm:justify-between">
         <p className="max-w-2xl">
-          Source: SEC EDGAR XBRL company facts ({[...data.concepts.revenue, ...data.concepts.netIncome, ...data.concepts.assets].join(", ")}).
-          Fourth-quarter flows are often derived as full year minus Q1–Q3 and appear lighter. Figures are as filed, including later amendments.
+          Source: SEC EDGAR XBRL company facts (
+          {[...data.concepts.revenue, ...data.concepts.netIncome, ...data.concepts.assets].join(
+            ", ",
+          )}
+          ). Fourth-quarter flows are often derived as full year minus Q1–Q3 and appear lighter.
+          Figures are as filed, including later amendments.
         </p>
         <a
           className="inline-flex shrink-0 items-center gap-1 hover:text-foreground"

@@ -282,7 +282,12 @@ function addGrowth(rows: PeriodRow[], lag: number) {
   return rows;
 }
 
-function emptyRow(key: string, label: string, fiscalYear: number, quarter: number | null): PeriodRow {
+function emptyRow(
+  key: string,
+  label: string,
+  fiscalYear: number,
+  quarter: number | null,
+): PeriodRow {
   return {
     key,
     label,

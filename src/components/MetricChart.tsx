@@ -85,22 +85,15 @@ export function MetricChart({
   const axes = (
     <>
       <CartesianGrid vertical={false} strokeDasharray="2 4" />
-      <XAxis
-        dataKey="label"
-        tickLine={false}
-        axisLine={false}
-        minTickGap={18}
-        tickMargin={8}
-      />
-      <YAxis
-        tickFormatter={axisFmt}
-        tickLine={false}
-        axisLine={false}
-        width={64}
-        tickCount={5}
-      />
+      <XAxis dataKey="label" tickLine={false} axisLine={false} minTickGap={18} tickMargin={8} />
+      <YAxis tickFormatter={axisFmt} tickLine={false} axisLine={false} width={64} tickCount={5} />
       <Tooltip
-        cursor={{ fill: "var(--color-accent)", opacity: 0.6, stroke: "var(--color-rule)", strokeOpacity: 0.3 }}
+        cursor={{
+          fill: "var(--color-accent)",
+          opacity: 0.6,
+          stroke: "var(--color-rule)",
+          strokeOpacity: 0.3,
+        }}
         content={<ChartTooltip metric={metric} currency={currency} />}
       />
     </>

@@ -45,12 +45,26 @@ export const getCompanyFinancials = createServerFn({ method: "GET" })
       }
       const json = await getCompanyFactsJson(match.cik);
       if (!json) {
-        return { ok: false, ticker, error: `${match.name} has no structured financial data on EDGAR.` };
+        return {
+          ok: false,
+          ticker,
+          error: `${match.name} has no structured financial data on EDGAR.`,
+        };
       }
       const parsed = parseCompanyFacts(json);
-      return { ok: true, cik: match.cik, ticker: match.ticker, name: json.entityName || match.name, ...parsed };
+      return {
+        ok: true,
+        cik: match.cik,
+        ticker: match.ticker,
+        name: json.entityName || match.name,
+        ...parsed,
+      };
     } catch (e) {
       console.error("getCompanyFinancials failed", e);
-      return { ok: false, ticker, error: "The SEC data service didn’t respond. Please try again shortly." };
+      return {
+        ok: false,
+        ticker,
+        error: "The SEC data service didn’t respond. Please try again shortly.",
+      };
     }
   });
