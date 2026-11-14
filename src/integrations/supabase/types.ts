@@ -14,7 +14,162 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      companies: {
+        Row: {
+          cik: number
+          description: string | null
+          exchanges: string[] | null
+          facts_fetched_at: string | null
+          fiscal_year_end: string | null
+          name: string
+          sic_description: string | null
+          submissions_fetched_at: string | null
+          ticker: string
+        }
+        Insert: {
+          cik: number
+          description?: string | null
+          exchanges?: string[] | null
+          facts_fetched_at?: string | null
+          fiscal_year_end?: string | null
+          name: string
+          sic_description?: string | null
+          submissions_fetched_at?: string | null
+          ticker: string
+        }
+        Update: {
+          cik?: number
+          description?: string | null
+          exchanges?: string[] | null
+          facts_fetched_at?: string | null
+          fiscal_year_end?: string | null
+          name?: string
+          sic_description?: string | null
+          submissions_fetched_at?: string | null
+          ticker?: string
+        }
+        Relationships: []
+      }
+      filings: {
+        Row: {
+          accession: string
+          cik: number
+          description: string | null
+          filing_date: string
+          form: string
+          items: string | null
+          primary_document: string | null
+          report_date: string | null
+        }
+        Insert: {
+          accession: string
+          cik: number
+          description?: string | null
+          filing_date: string
+          form: string
+          items?: string | null
+          primary_document?: string | null
+          report_date?: string | null
+        }
+        Update: {
+          accession?: string
+          cik?: number
+          description?: string | null
+          filing_date?: string
+          form?: string
+          items?: string | null
+          primary_document?: string | null
+          report_date?: string | null
+        }
+        Relationships: []
+      }
+      financial_facts: {
+        Row: {
+          cik: number
+          currency: string
+          data: Json
+          fetched_at: string
+          fiscal_year_end_month: number
+        }
+        Insert: {
+          cik: number
+          currency: string
+          data: Json
+          fetched_at?: string
+          fiscal_year_end_month: number
+        }
+        Update: {
+          cik?: number
+          currency?: string
+          data?: Json
+          fetched_at?: string
+          fiscal_year_end_month?: number
+        }
+        Relationships: []
+      }
+      holdings: {
+        Row: {
+          avg_price: number | null
+          cik: number
+          company_name: string
+          created_at: string
+          id: string
+          shares: number | null
+          ticker: string
+          user_id: string
+        }
+        Insert: {
+          avg_price?: number | null
+          cik: number
+          company_name: string
+          created_at?: string
+          id?: string
+          shares?: number | null
+          ticker: string
+          user_id: string
+        }
+        Update: {
+          avg_price?: number | null
+          cik?: number
+          company_name?: string
+          created_at?: string
+          id?: string
+          shares?: number | null
+          ticker?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          audio_digest_enabled: boolean
+          created_at: string
+          delivery_email: string | null
+          digest_email_enabled: boolean
+          id: string
+          onboarded: boolean
+          updated_at: string
+        }
+        Insert: {
+          audio_digest_enabled?: boolean
+          created_at?: string
+          delivery_email?: string | null
+          digest_email_enabled?: boolean
+          id: string
+          onboarded?: boolean
+          updated_at?: string
+        }
+        Update: {
+          audio_digest_enabled?: boolean
+          created_at?: string
+          delivery_email?: string | null
+          digest_email_enabled?: boolean
+          id?: string
+          onboarded?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
