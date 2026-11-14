@@ -82,22 +82,36 @@ export function MetricChart({
     syncId,
     margin: { top: 8, right: 4, bottom: 0, left: 0 },
   };
-  const axes = (
-    <>
-      <CartesianGrid vertical={false} strokeDasharray="2 4" />
-      <XAxis dataKey="label" tickLine={false} axisLine={false} minTickGap={18} tickMargin={8} />
-      <YAxis tickFormatter={axisFmt} tickLine={false} axisLine={false} width={64} tickCount={5} />
-      <Tooltip
-        cursor={{
-          fill: "var(--color-accent)",
-          opacity: 0.6,
-          stroke: "var(--color-rule)",
-          strokeOpacity: 0.3,
-        }}
-        content={<ChartTooltip metric={metric} currency={currency} />}
-      />
-    </>
-  );
+  // Recharts 2 ignores children wrapped in fragments, so pass these as a keyed array.
+  const axes = [
+    <CartesianGrid key="grid" vertical={false} strokeDasharray="2 4" />,
+    <XAxis
+      key="x"
+      dataKey="label"
+      tickLine={false}
+      axisLine={false}
+      minTickGap={18}
+      tickMargin={8}
+    />,
+    <YAxis
+      key="y"
+      tickFormatter={axisFmt}
+      tickLine={false}
+      axisLine={false}
+      width={64}
+      tickCount={5}
+    />,
+    <Tooltip
+      key="tip"
+      cursor={{
+        fill: "var(--color-accent)",
+        fillOpacity: 0.6,
+        stroke: "var(--color-rule)",
+        strokeOpacity: 0.3,
+      }}
+      content={<ChartTooltip metric={metric} currency={currency} />}
+    />,
+  ];
 
   return (
     <ResponsiveContainer width="100%" height={260}>
