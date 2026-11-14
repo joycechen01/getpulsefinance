@@ -5,4 +5,6 @@
 - [x] Build comparison with up to five named competitors and five TTM metrics.
 - [x] Build shared portfolio risk disclosures with source passages.
 - [x] Test Phase 3 and verify the signed-in flow for all four demo companies.
-- [ ] Phase 4: send the latest SEC earnings digest and developments to the signed-in user's delivery email. Blocked on an owned sender domain being configured.
+- [x] Build on-demand earnings digests and developments using real SEC data.
+- [x] Send each company/period once through connected Gmail, restricted to the mailbox owner's account.
+- [x] Verify digest previews, Gmail delivery and duplicate protection.

@@ -1,13 +1,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ExternalLink, Headphones, Loader2, Pencil, Trash2 } from "lucide-react";
+import { ExternalLink, Loader2, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { CompanySearch } from "@/components/CompanySearch";
 import { DevelopmentsPanel } from "@/components/research/DevelopmentsPanel";
 import { SharedRisksPanel } from "@/components/research/SharedRisksPanel";
+import { EarningsDigestPanel } from "@/components/research/EarningsDigestPanel";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { InfoTip } from "@/components/InfoTip";
 import { Sparkline } from "@/components/Sparkline";
@@ -83,18 +84,7 @@ function Home() {
         </div>
       </div>
 
-      <section className="panel flex flex-wrap items-center gap-4 p-5">
-        <div className="flex size-10 items-center justify-center rounded-full bg-secondary text-muted-foreground">
-          <Headphones className="size-4" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="eyebrow">Latest earnings digest</div>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            No digests yet. When a holding files its next 10-Q or 10-K, its written and audio digest will appear
-            here.
-          </p>
-        </div>
-      </section>
+      <EarningsDigestPanel tickers={tickers} />
 
       <HoldingsTable rows={data.holdings} quotes={quotes.data} quotesLoading={quotes.isLoading} />
       <SharedRisksPanel tickers={tickers} />

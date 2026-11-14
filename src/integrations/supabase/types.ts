@@ -50,6 +50,56 @@ export type Database = {
         }
         Relationships: []
       }
+      digest_deliveries: {
+        Row: {
+          accession: string
+          created_at: string
+          error: string | null
+          gmail_id: string | null
+          id: string
+          period_end: string
+          recipient: string
+          sent_at: string | null
+          status: string
+          ticker: string
+          user_id: string
+        }
+        Insert: {
+          accession: string
+          created_at?: string
+          error?: string | null
+          gmail_id?: string | null
+          id?: string
+          period_end: string
+          recipient: string
+          sent_at?: string | null
+          status: string
+          ticker: string
+          user_id: string
+        }
+        Update: {
+          accession?: string
+          created_at?: string
+          error?: string | null
+          gmail_id?: string | null
+          id?: string
+          period_end?: string
+          recipient?: string
+          sent_at?: string | null
+          status?: string
+          ticker?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "digest_deliveries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       filing_extractions: {
         Row: {
           accession: string

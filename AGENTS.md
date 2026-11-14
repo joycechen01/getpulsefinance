@@ -42,3 +42,4 @@ use the editor.
 
 - Keep shared visual roles in the light-only semantic theme and shared Logo component so brand updates propagate without changing financial logic.
 - Phase 3 filing research is cached per annual accession in server-only `filing_research` with no anon/authenticated grants or read policies; authenticated research functions expose scoped results, and pure `research.ts` validates literal competitor evidence, conservative SEC registrant matches, specific shared-risk keys and four-quarter TTM comparisons so AI never calculates figures or supplies outside competitors.
+- Gmail digests use authenticated on-demand server functions, require the signed-in email to match the connected mailbox, derive recipients from owner-only profiles, and atomically claim unique account/company/period delivery rows before calling Gmail; unconfirmed sends never retry automatically.

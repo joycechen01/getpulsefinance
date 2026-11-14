@@ -66,7 +66,7 @@ function SettingsPage() {
           <span>
             <span className="block text-sm font-medium">Earnings digest emails</span>
             <span className="block text-xs text-muted-foreground">
-              One email when a holding reports a 10-Q or 10-K. Never a daily newsletter.
+              Allow on-demand delivery of each holding’s latest 10-Q or 10-K digest.
             </span>
           </span>
           <Switch checked={digest} onCheckedChange={setDigest} />
@@ -80,7 +80,7 @@ function SettingsPage() {
         </label>
       </div>
       <p className="mt-3 text-xs text-muted-foreground">
-        Digests aren’t being sent yet. These preferences will apply once digest delivery is switched on.
+        Send digests from your portfolio using the account that matches the connected Gmail. Automatic delivery and audio are not enabled yet.
       </p>
       <div className="mt-5 flex justify-end">
         <Button onClick={save} disabled={saving || !p}>

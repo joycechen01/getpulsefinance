@@ -66,7 +66,7 @@ async function citationsFor(sb: Admin, ids: number[]): Promise<Map<number, Citat
   return out;
 }
 
-async function signalViews(sb: Admin, ciks: number[], tickers: Map<number, string>): Promise<SignalView[]> {
+export async function signalViews(sb: Admin, ciks: number[], tickers: Map<number, string>): Promise<SignalView[]> {
   if (!ciks.length) return [];
   const { data } = await sb.from("signals").select("*").in("cik", ciks).order("filed_date", { ascending: false }).limit(60);
   const cites = await citationsFor(sb, [...new Set((data ?? []).flatMap((s) => s.passage_ids))]);

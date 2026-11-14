@@ -1,0 +1,14 @@
+import { beforeEach,expect,it,vi } from "vitest";
+const state=vi.hoisted(()=>({previous:null as null|{status:string},insertError:null as null|{code:string},insert:vi.fn()}));
+vi.mock("@/integrations/supabase/client.server",()=>({supabaseAdmin:{from:()=>({select:()=>({eq:()=>({eq:()=>({eq:()=>({maybeSingle:async()=>({data:state.previous,error:null})})})})}),insert:async()=>{state.insert();return {error:state.insertError};}})}}));
+vi.mock("./company.server",()=>({ensureCompany:vi.fn()}));
+vi.mock("./edgar.server",()=>({findTicker:vi.fn()}));
+vi.mock("./analysis.server",()=>({ensureSignals:vi.fn()}));
+vi.mock("./analysis.functions",()=>({signalViews:vi.fn()}));
+import { deliverDigest } from "./digest.server";
+import type { EarningsDigest } from "./digest";
+const digest:EarningsDigest={ticker:"NVDA",name:"NVIDIA",period:"Q2 FY27",filing:{accession:"a",form:"10-Q",filing_date:"2026-08-26",report_date:"2026-07-26",url:"https://www.sec.gov"},metrics:[],developments:[],reviewComplete:true};
+beforeEach(()=>{state.previous=null;state.insertError=null;state.insert.mockClear();vi.stubGlobal("fetch",vi.fn());});
+it("a completed company/period never sends again",async()=>{state.previous={status:"sent"};expect(await deliverDigest("u","owner@gmail.com",digest)).toEqual({alreadySent:true});expect(state.insert).not.toHaveBeenCalled();expect(fetch).not.toHaveBeenCalled();});
+it("a concurrent unique claim prevents a second Gmail send",async()=>{state.insertError={code:"23505"};await expect(deliverDigest("u","owner@gmail.com",digest)).rejects.toThrow("already being processed");expect(fetch).not.toHaveBeenCalled();});
+it("an unconfirmed delivery cannot automatically retry",async()=>{state.previous={status:"uncertain"};await expect(deliverDigest("u","owner@gmail.com",digest)).rejects.toThrow("unconfirmed");expect(fetch).not.toHaveBeenCalled();});
