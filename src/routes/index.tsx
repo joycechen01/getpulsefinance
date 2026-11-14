@@ -107,6 +107,9 @@ function Landing() {
         </section>
       </main>
       <footer className="border-t py-6 text-center text-xs text-muted-foreground">
+        <div className="mb-3 flex justify-center text-foreground">
+          <PulseLogo size={28} color="var(--color-primary)" />
+        </div>
         Data from SEC EDGAR. Not investment advice.
       </footer>
     </div>
