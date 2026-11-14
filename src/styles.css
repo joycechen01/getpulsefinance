@@ -306,6 +306,7 @@ main.max-w-7xl, main.max-w-6xl, header > .max-w-7xl { max-width: 1200px; }
 .landing-closing { padding: 48px 0 64px; text-align: center; }
 .landing-closing h2 { font-size: 40px; line-height: 1.15; }
 @media(max-width:767px) {
+ .landing-dynamic header .landing-cta { padding-inline: 8px; font-size: 11px; }
  .landing-dynamic .landing-intro { padding-top: 32px; }
  .landing-dynamic .landing-intro .landing-title { font-size: 40px; }
  .landing-dynamic .landing-intro .landing-tagline { font-size: 26px; }

@@ -81,7 +81,7 @@ function WhatChanged({ ticker }: { ticker: string }) {
   const reveal = useReveal();
   if (!data?.ok) return null;
   const items = data.changes
-    .filter((c: Change) => c.section === "risk_factors" && c.tag !== "reworded")
+    .filter((c: Change) => c.section === "risk" && c.tag !== "reworded")
     .slice(0, 3);
   if (!items.length) return null;
   return (

@@ -65,7 +65,7 @@ function Landing() {
               <Link to={signedIn ? "/home" : "/auth"}>{signedIn ? "Open portfolio" : "Sign in"}</Link>
             </Button>
             {!signedIn && (
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="landing-cta">
                 <Link to="/auth">Create your free portfolio</Link>
               </Button>
             )}
