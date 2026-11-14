@@ -124,3 +124,11 @@ export const BADGES = {
 } as const;
 
 export const CONFIDENCE_TEXT = "How directly the cited evidence supports the statement.";
+
+/** Redline change tags (computed in code by comparing paragraphs). */
+export const CHANGE_TAGS = {
+  new: { label: "New", text: "A paragraph with no close match in the prior comparable filing." },
+  expanded: { label: "Expanded", text: "A paragraph that matches one in the prior filing but adds substantial new sentences." },
+  removed: { label: "Removed", text: "A paragraph from the prior filing with no close match in the latest one." },
+  reworded: { label: "Reworded", text: "A routine wording change to a paragraph that is otherwise the same." },
+} as const;
