@@ -5,3 +5,4 @@
 - [x] Build comparison with up to five named competitors and five TTM metrics.
 - [x] Build shared portfolio risk disclosures with source passages.
 - [x] Test Phase 3 and verify the signed-in flow for all four demo companies.
+- [ ] Phase 4: send the latest SEC earnings digest and developments to the signed-in user's delivery email. Blocked on an owned sender domain being configured.
