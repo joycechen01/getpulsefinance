@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import type { Citation } from "./analysis.functions";
 import type { Financials } from "./metrics";
-import { comparisonInput, comparisonTTM, matchRegistrant, MAX_COMPETITORS, sharedRiskGroups } from "./research";
+import { comparisonInput, comparisonTTM, comparisonTrend, matchRegistrant, MAX_COMPETITORS, sharedRiskGroups } from "./research";
 import { secDocUrl } from "./format";
 import type { SectionId } from "./filing-sections";
 
@@ -81,8 +81,8 @@ export const getComparison = createServerFn({method:"POST"}).middleware([require
         const ttm = comparisonTTM(fin);
         const {data:filings} = await context.supabase.from("filings").select("accession,primary_document,report_date").eq("cik",target.cik).in("form",["10-Q","10-K"]).order("filing_date",{ascending:false}).limit(60);
         const source = filings?.find(f=>f.report_date === ttm.end) ?? filings?.[0];
-        rows.push({...target,...ttm,available:!!fin,currency:fin?.currency ?? null,url:source ? secDocUrl(target.cik,source.accession,source.primary_document):null});
-      } catch(e) { console.error("Peer financials failed",target.ticker,e); rows.push({...target,...comparisonTTM(null),available:false,currency:null,url:null}); }
+        rows.push({...target,...ttm,trend:comparisonTrend(fin,12),available:!!fin,currency:fin?.currency ?? null,url:source ? secDocUrl(target.cik,source.accession,source.primary_document):null});
+      } catch(e) { console.error("Peer financials failed",target.ticker,e); rows.push({...target,...comparisonTTM(null),trend:comparisonTrend(null),available:false,currency:null,url:null}); }
     }
     return {ok:true as const,rows};
   } catch(e) { return failure(e); }

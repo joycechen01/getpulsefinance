@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { CompanySearch } from "@/components/CompanySearch";
 import { DevelopmentsPanel } from "@/components/research/DevelopmentsPanel";
+import { AskPanel } from "@/components/research/AskPanel";
 import { SharedRisksPanel } from "@/components/research/SharedRisksPanel";
 import { EarningsDigestPanel } from "@/components/research/EarningsDigestPanel";
 import { MaterialEventsPanel } from "@/components/research/MaterialEventsPanel";
@@ -90,6 +91,7 @@ function Home() {
         <EarningsDigestPanel tickers={tickers} />
         <MaterialEventsPanel tickers={tickers} />
       </div>
+      {tickers.length > 0 && <AskPanel name="your holdings’ filings" />}
       <SharedRisksPanel tickers={tickers} />
 
       <div className="grid items-start gap-8 lg:grid-cols-[2fr_3fr]">

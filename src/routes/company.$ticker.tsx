@@ -15,7 +15,7 @@ import { CompanySearch } from "@/components/CompanySearch";
 import { AskPanel } from "@/components/research/AskPanel";
 import { RedlineView } from "@/components/research/RedlineView";
 import { SignalsPanel } from "@/components/research/SignalsPanel";
-import { StoryTimeline } from "@/components/research/StoryTimeline";
+import { NewsPanel } from "@/components/research/NewsPanel";
 import { CompetitorComparison } from "@/components/research/CompetitorComparison";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Logo } from "@/components/Logo";
@@ -127,6 +127,7 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
   
             {signedIn ? (
               <>
+                <AskPanel ticker={company.ticker} name={company.name} />
                 <TrendExplorer rows={rows} currency={cur} />
                 <section className="metric-groups grid gap-8 lg:grid-cols-2">
                   {GROUPS.map((g) => (
@@ -203,8 +204,7 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="changes">What changed</TabsTrigger>
             <TabsTrigger value="signals">Signals</TabsTrigger>
-            <TabsTrigger value="ask">Ask</TabsTrigger>
-            <TabsTrigger value="story">Story timeline</TabsTrigger>
+            <TabsTrigger value="news">News</TabsTrigger>
             <TabsTrigger value="competitors">Competitors</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-8">
@@ -216,11 +216,8 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
           <TabsContent value="signals">
             <SignalsPanel ticker={company.ticker} />
           </TabsContent>
-          <TabsContent value="ask">
-            <AskPanel ticker={company.ticker} name={company.name} />
-          </TabsContent>
-          <TabsContent value="story">
-            <StoryTimeline ticker={company.ticker} />
+          <TabsContent value="news">
+            <NewsPanel ticker={company.ticker} name={company.name} />
           </TabsContent>
           <TabsContent value="competitors">
             <CompetitorComparison ticker={company.ticker} />

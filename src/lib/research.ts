@@ -83,3 +83,27 @@ export function sharedRiskGroups<T extends { ticker: string; risks: FilingResear
   }
   return [...groups.entries()].filter(([,g]) => g.members.length >= 2).map(([key,g]) => ({ key, ...g }));
 }
+/** Calendar quarter label of a period end (fiscal calendars differ, so peers align on this). */
+export function calendarQuarter(end: string) {
+  const [y, m] = end.split("-").map(Number);
+  return `${y} Q${Math.ceil((m ?? 1) / 3)}`;
+}
+
+/** Rolling four-quarter values for the last `quarters` quarterly period ends. Missing windows stay null. */
+export function comparisonTrend(fin: Financials | null, quarters = 12) {
+  if (!fin) return [];
+  const rows = fin.quarterly.slice().sort((a, b) => index(a) - index(b));
+  const out: { end: string; quarter: string; values: Record<ComparisonMetric, number | null> }[] = [];
+  for (let k = Math.max(0, rows.length - quarters); k < rows.length; k++) {
+    const row = rows[k];
+    if (!row) continue;
+    const t = comparisonTTM({ ...fin, quarterly: rows.slice(0, k + 1) });
+    out.push({ end: row.end, quarter: calendarQuarter(row.end), values: t.values });
+  }
+  return out;
+}
+
+/** "Select all": filing order, capped at the comparison limit. */
+export function selectAllPeers(names: string[], max = MAX_COMPETITORS) {
+  return [...new Set(names)].slice(0, max);
+}

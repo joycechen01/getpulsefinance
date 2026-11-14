@@ -20,3 +20,8 @@
 - [x] Link Finnhub and use secure gateway quotes for holdings price and day change; verified all four real holdings, desktop/mobile and four quote tests.
 - [x] Investigate blank holdings prices: verified all four holdings show Finnhub values on published and preview pages; no request or page errors reproduced.
 - [x] Replace the company story operating-margin graph with a simple dated, cited timeline; verified six NVIDIA entries, expandable evidence and desktop/mobile.
+
+## Follow-up plan (Nov 14)
+- [x] Competitor: select all, compact 3-per-row cards, stacked trend charts
+- [x] Replace Story timeline tab with News (Finnhub)
+- [x] Ask under key metrics on Overview; portfolio-wide Ask

@@ -35,3 +35,21 @@ describe("Phase 3 research rules",()=>{
     expect(validateResearch({competitors:[],risks:[{key:"x",title:"x",description:"x",uncertain:"x",passage_ids:[1]}]},[{id:1,section:"mdna",body:"x"}]).risks).toEqual([]);
   });
 });
+import { calendarQuarter, comparisonTrend, selectAllPeers } from "./research";
+describe("competitor trends", () => {
+  it("aligns period ends on calendar quarters", () => {
+    expect(calendarQuarter("2025-07-27")).toBe("2025 Q3");
+    expect(calendarQuarter("2025-12-31")).toBe("2025 Q4");
+  });
+  it("select all keeps filing order and caps at five", () => {
+    expect(selectAllPeers(["A","B","C","D","E","F","G"])).toEqual(["A","B","C","D","E"]);
+  });
+  it("leaves gaps instead of estimating when fewer than four quarters exist", () => {
+    const q = (fy:number,qt:number,end:string)=>({fiscalYear:fy,quarter:qt,end,v:{revenue:100,operatingIncome:20}});
+    const fin = { currency:"USD", annual:[], quarterly:[q(2024,1,"2024-03-31"),q(2024,2,"2024-06-30"),q(2024,3,"2024-09-30"),q(2024,4,"2024-12-31")] } as any;
+    const t = comparisonTrend(fin, 12);
+    expect(t).toHaveLength(4);
+    expect(t[0]?.values.operatingMargin).toBeNull();
+    expect(t[3]?.values.operatingMargin).toBeCloseTo(0.2);
+  });
+});
