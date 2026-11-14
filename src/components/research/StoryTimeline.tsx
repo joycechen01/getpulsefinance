@@ -24,7 +24,7 @@ export function StoryTimeline({ticker,fin,sourceUrl}:{ticker:string;fin:Financia
       <div className="mt-2 flex flex-wrap items-center gap-3"><EvidenceBadge kind="calc"/><a href={sourceUrl} target="_blank" rel="noreferrer" className="text-xs">SEC financial statements</a></div>
     </div>
     {chart.length ? <ClientOnly fallback={<div className="h-64 rounded bg-muted"/>}>
-      <div className="h-64 min-w-0" aria-label="Operating margin history">
+      <div className="h-64 min-w-0 overflow-hidden" aria-label="Operating margin history">
         <ResponsiveContainer width="100%" height="100%"><LineChart data={chart} margin={{top:16,right:16,left:0,bottom:8}}>
           <CartesianGrid vertical={false} stroke="var(--color-rule)"/>
           <XAxis dataKey="time" type="number" domain={[Math.min(...dates),Math.max(...dates, ...entries.flatMap(s=>s.citations.map(c=>Date.parse(c.filing_date))))]} scale="time" tickFormatter={v=>String(new Date(v).getUTCFullYear())} tick={{fill:"var(--color-muted-foreground)",fontSize:12}}/>
