@@ -12,5 +12,5 @@
 - [x] Phase 5: cited earnings-call summaries from Alpha Vantage, cached for the matching fiscal quarter.
 - [x] Test Phase 5 against real filings and available transcripts; leave remaining Phase 4 features on hold.
 - [ ] Daily material-event checks on hold at the user's request; scheduled job removed, on-demand reviews and emails retained.
-- [ ] Apply the approved Crisp blue palette, Outfit/Figtree typography and publication-style app layouts.
-- [ ] Verify redesigned public and signed-in screens on desktop and mobile.
+- [x] Apply the approved Crisp blue palette, Outfit/Figtree typography and publication-style app layouts.
+- [x] Verify redesigned public and signed-in screens on desktop and mobile.
