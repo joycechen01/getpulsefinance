@@ -15,7 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedCompanyTickerRouteImport } from './routes/_authenticated/company.$ticker'
+import { Route as CompanyTickerRouteImport } from './routes/company.$ticker'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,12 +46,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedCompanyTickerRoute =
-  AuthenticatedCompanyTickerRouteImport.update({
-    id: '/company/$ticker',
-    path: '/company/$ticker',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
+const CompanyTickerRoute = CompanyTickerRouteImport.update({
+  id: '/company/$ticker',
+  path: '/company/$ticker',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -59,7 +58,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof AuthenticatedHomeRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/company/$ticker': typeof AuthenticatedCompanyTickerRoute
+  '/company/$ticker': typeof CompanyTickerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -67,7 +66,7 @@ export interface FileRoutesByTo {
   '/home': typeof AuthenticatedHomeRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/company/$ticker': typeof AuthenticatedCompanyTickerRoute
+  '/company/$ticker': typeof CompanyTickerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,7 +76,7 @@ export interface FileRoutesById {
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
-  '/_authenticated/company/$ticker': typeof AuthenticatedCompanyTickerRoute
+  '/company/$ticker': typeof CompanyTickerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -93,13 +92,14 @@ export interface FileRouteTypes {
     | '/_authenticated/home'
     | '/_authenticated/onboarding'
     | '/_authenticated/settings'
-    | '/_authenticated/company/$ticker'
+    | '/company/$ticker'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CompanyTickerRoute: typeof CompanyTickerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -146,12 +146,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/company/$ticker': {
-      id: '/_authenticated/company/$ticker'
+    '/company/$ticker': {
+      id: '/company/$ticker'
       path: '/company/$ticker'
       fullPath: '/company/$ticker'
-      preLoaderRoute: typeof AuthenticatedCompanyTickerRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof CompanyTickerRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -160,14 +160,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedCompanyTickerRoute: typeof AuthenticatedCompanyTickerRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedCompanyTickerRoute: AuthenticatedCompanyTickerRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -177,6 +175,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CompanyTickerRoute: CompanyTickerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
