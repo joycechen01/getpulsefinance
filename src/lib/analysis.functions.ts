@@ -222,7 +222,7 @@ export const askCompany = createServerFn({ method: "POST" })
 - Quote figures exactly; never compute or invent numbers, and don't use outside knowledge.
 - If the excerpts don't answer the question, say so plainly and set answerable to false.
 - Never give buy, sell or hold advice, price targets or predictions.
-- Keep the answer under 180 words, plain language.
+- Keep the answer under 180 words, plain language. Plain text only: no markdown, no asterisks; use short lines starting with "• " for lists.
 - uncertain: one sentence on what remains uncertain or isn't disclosed.
 - cited: the excerpt ids you used.`,
         `Company: ${match.name} (${match.ticker})
@@ -234,8 +234,8 @@ ${list.map((c) => `[${c.ref}] ${c.form} filed ${c.filing_date}, section ${c.sect
       const used = new Set([...out.cited, ...(out.answer.match(/S\d+/g) ?? [])]);
       return {
         ok: true,
-        answer: out.answer,
-        uncertain: out.uncertain,
+        answer: out.answer.replace(/\*\*/g, ""),
+        uncertain: out.uncertain.replace(/\s*\[S\d+(?:,\s*S\d+)*\]/g, "").trim(),
         answerable: out.answerable,
         citations: list.filter((c) => used.has(c.ref)),
       };

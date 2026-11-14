@@ -37,3 +37,5 @@ use the editor.
 - SEC data is cached in shared tables (`companies`, `filings`, `financial_facts`) written only by server code via the admin client in `company.server.ts`; user tables (`profiles`, `holdings`) are owner-only via RLS.
 - Metric tooltip text comes only from `src/lib/glossary.ts`; never generated at runtime.
 - `/company/$ticker` is a public route (guest data via unauthenticated `getCompanyPublic`, shared SEC tables only); portfolio features and full metric groups require sign-in.
+- Filing text: section extraction (`filing-sections.ts`) and change tagging (`redline.ts`) are pure, tested modules; passages, redlines and signals are cached once per filing in shared tables by `analysis.server.ts`, so AI runs at most once per filing.
+- All AI calls go through `src/lib/ai.server.ts` (streamed, strict schema); AI only cites passage ids it was given, never computes figures.
