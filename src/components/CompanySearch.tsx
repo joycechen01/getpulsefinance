@@ -77,8 +77,23 @@ export function CompanySearch({
               if (pick) go(pick.toUpperCase());
             } else if (e.key === "Escape") setOpen(false);
           }}
-          className="h-11 w-full rounded-md border border-input bg-surface pr-4 pl-10 text-sm shadow-card outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-ring/25"
+          className={cn(
+            "h-11 w-full rounded-md border border-input bg-surface pl-10 text-sm shadow-card outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-ring/25",
+            actionLabel ? "pr-24" : "pr-4",
+          )}
         />
+        {actionLabel && (
+          <button
+            type="button"
+            onClick={() => {
+              const pick = results[active]?.ticker ?? (text.trim() ? text.trim() : null);
+              if (pick) go(pick.toUpperCase());
+            }}
+            className="absolute top-1/2 right-1.5 -translate-y-1/2 rounded-sm bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            {actionLabel}
+          </button>
+        )}
         {open && debounced && (
           <ul
             role="listbox"
