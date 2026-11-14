@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { ExternalLink, Loader2, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -17,14 +17,24 @@ import { Sparkline } from "@/components/Sparkline";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { portfolioQuery, quotesQuery } from "@/lib/edgar-queries";
 import { formatDate, formatPrice, secDocUrl } from "@/lib/format";
 import { fmtChange, fmtValue } from "@/lib/metric-config";
 import { latestWithYoY, series } from "@/lib/metrics";
-import { addHolding, removeHolding, updateHolding, type PortfolioRow } from "@/lib/portfolio.functions";
+import { addHolding, updateHolding, type PortfolioRow } from "@/lib/portfolio.functions";
 import { profileQuery } from "@/lib/profile";
+import { useRemoveHolding } from "@/lib/use-remove-holding";
+
+const TABS = ["overview", "ask"] as const;
+type Tab = (typeof TABS)[number];
 
 export const Route = createFileRoute("/_authenticated/home")({
+  // The tab lives in the URL so refresh, back and shared links keep it.
+  validateSearch: (search: Record<string, unknown>): { tab?: Tab } => {
+    const tab = TABS.find((t) => t === search["tab"]);
+    return tab && tab !== "overview" ? { tab } : {};
+  },
   head: () => ({ meta: [
     { title: "Your portfolio — Pulse Finance" },
     { name: "description", content: "Follow the companies you own with SEC filings and evidence-backed research." },
@@ -38,6 +48,8 @@ export const Route = createFileRoute("/_authenticated/home")({
 
 function Home() {
   const qc = useQueryClient();
+  const { tab = "overview" } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
   const profile = useQuery(profileQuery());
   const pf = useQuery(portfolioQuery());
   const add = useServerFn(addHolding);
@@ -86,40 +98,60 @@ function Home() {
         </div>
       </div>
 
-      <HoldingsTable rows={data.holdings} quotes={quotes.data} quotesLoading={quotes.isLoading} />
-      <div className="editorial-research grid items-start gap-8 lg:grid-cols-[3fr_2fr]">
-        <EarningsDigestPanel tickers={tickers} />
-        <MaterialEventsPanel tickers={tickers} />
-      </div>
-      {tickers.length > 0 && <AskPanel name="your holdings’ filings" />}
-      <SharedRisksPanel tickers={tickers} />
+      <Tabs
+        value={tab}
+        onValueChange={(t) =>
+          navigate({ search: t === "overview" ? {} : { tab: t as Tab }, replace: true, resetScroll: false })
+        }
+        className="space-y-6"
+      >
+        <TabsList className="research-tabs">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="ask">Ask</TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview" className="space-y-8">
+          <HoldingsTable rows={data.holdings} quotes={quotes.data} quotesLoading={quotes.isLoading} />
+          <div className="editorial-research grid items-start gap-8 lg:grid-cols-[3fr_2fr]">
+            <EarningsDigestPanel tickers={tickers} />
+            <MaterialEventsPanel tickers={tickers} />
+          </div>
+          <SharedRisksPanel tickers={tickers} />
 
-      <div className="grid items-start gap-8 lg:grid-cols-[2fr_3fr]">
-        <section className="editorial-section">
-          <h2 className="text-2xl">Recent SEC filing activity</h2>
-          <ul className="mt-4 divide-y">
-            {data.recentFilings.length === 0 && <li className="py-3 text-sm text-muted-foreground">No filings yet.</li>}
-            {data.recentFilings.map((f) => (
-              <li key={f.accession} className="flex items-center gap-3 py-2.5 text-sm">
-                <span className="figure w-12 text-primary">{f.ticker}</span>
-                <span className="w-14 rounded-sm bg-secondary px-1.5 py-0.5 text-center font-mono text-xs">{f.form}</span>
-                <span className="min-w-0 flex-1 truncate text-muted-foreground">{f.description ?? f.form}</span>
-                <span className="figure text-xs text-muted-foreground">{formatDate(f.filing_date)}</span>
-                <a
-                  href={secDocUrl(f.cik, f.accession, f.primary_document)}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="Open on SEC"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  <ExternalLink className="size-3.5" />
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-        <DevelopmentsPanel />
-      </div>
+          <div className="grid items-start gap-8 lg:grid-cols-[2fr_3fr]">
+            <section className="editorial-section">
+              <h2 className="text-2xl">Recent SEC filing activity</h2>
+              <ul className="mt-4 divide-y">
+                {data.recentFilings.length === 0 && <li className="py-3 text-sm text-muted-foreground">No filings yet.</li>}
+                {data.recentFilings.map((f) => (
+                  <li key={f.accession} className="flex items-center gap-3 py-2.5 text-sm">
+                    <span className="figure w-12 text-primary">{f.ticker}</span>
+                    <span className="w-14 rounded-sm bg-secondary px-1.5 py-0.5 text-center font-mono text-xs">{f.form}</span>
+                    <span className="min-w-0 flex-1 truncate text-muted-foreground">{f.description ?? f.form}</span>
+                    <span className="figure text-xs text-muted-foreground">{formatDate(f.filing_date)}</span>
+                    <a
+                      href={secDocUrl(f.cik, f.accession, f.primary_document)}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label="Open on SEC"
+                      className="text-muted-foreground hover:text-primary"
+                    >
+                      <ExternalLink className="size-3.5" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <DevelopmentsPanel />
+          </div>
+        </TabsContent>
+        <TabsContent value="ask">
+          {tickers.length > 0 ? (
+            <AskPanel name="your holdings’ filings" />
+          ) : (
+            <p className="text-sm text-muted-foreground">Add a holding to ask questions across your filings.</p>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
@@ -201,7 +233,7 @@ function HoldingRow({
   quote: { price: number; change: number; changePct: number } | null | undefined;
 }) {
   const qc = useQueryClient();
-  const remove = useServerFn(removeHolding);
+  const remove = useRemoveHolding();
   const update = useServerFn(updateHolding);
   const [shares, setShares] = useState(r.shares?.toString() ?? "");
   const [avg, setAvg] = useState(r.avgPrice?.toString() ?? "");
@@ -305,10 +337,7 @@ function HoldingRow({
             type="button"
             aria-label={`Remove ${r.ticker}`}
             className="rounded p-1.5 text-muted-foreground hover:bg-secondary hover:text-destructive"
-            onClick={async () => {
-              await remove({ data: { id: r.id } });
-              qc.invalidateQueries({ queryKey: ["portfolio"] });
-            }}
+            onClick={() => remove(r)}
           >
             <Trash2 className="size-3.5" />
           </Button>

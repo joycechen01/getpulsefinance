@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ClientOnly, createFileRoute, Link } from "@tanstack/react-router";
+import { ClientOnly, createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Check, ExternalLink, Loader2, Lock, Plus } from "lucide-react";
 import { useState } from "react";
@@ -29,8 +29,16 @@ import { cn } from "@/lib/utils";
 
 type Freq = "quarterly" | "annual";
 
+const TABS = ["overview", "changes", "signals", "news", "competitors", "ask"] as const;
+type Tab = (typeof TABS)[number];
+
 export const Route = createFileRoute("/company/$ticker")({
   ssr: false,
+  // The research tab lives in the URL so refresh, back and shared links keep it.
+  validateSearch: (search: Record<string, unknown>): { tab?: Tab } => {
+    const tab = TABS.find((t) => t === search["tab"]);
+    return tab && tab !== "overview" ? { tab } : {};
+  },
   beforeLoad: async () => {
     const { data } = await supabase.auth.getSession();
     return { signedIn: !!data.session };
@@ -82,6 +90,8 @@ function CompanyLayout() {
 
 function CompanyPage({ signedIn }: { signedIn: boolean }) {
   const { ticker } = Route.useParams();
+  const { tab = "overview" } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
   const { data, isLoading, error } = useQuery(companyQuery(ticker, signedIn));
   const [freq, setFreq] = useState<Freq>("quarterly");
 
@@ -113,6 +123,19 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
   const cur = fin?.currency ?? "USD";
   const overview = (
     <>
+      {fin && (
+        <div className="flex justify-end">
+          <Segmented
+            label="Period"
+            value={freq}
+            onChange={setFreq}
+            options={[
+              { value: "quarterly", label: "Quarterly" },
+              { value: "annual", label: "Annual" },
+            ]}
+          />
+        </div>
+      )}
       {!fin || rows.length === 0 ? (
           <div className="panel p-6 text-sm text-muted-foreground">
             {company.name} has no structured XBRL financial data on EDGAR for this view.
@@ -127,7 +150,6 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
   
             {signedIn ? (
               <>
-                <AskPanel ticker={company.ticker} name={company.name} />
                 <TrendExplorer rows={rows} currency={cur} />
                 <section className="metric-groups grid gap-8 lg:grid-cols-2">
                   {GROUPS.map((g) => (
@@ -177,15 +199,6 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <Segmented
-            label="Period"
-            value={freq}
-            onChange={setFreq}
-            options={[
-              { value: "quarterly", label: "Quarterly" },
-              { value: "annual", label: "Annual" },
-            ]}
-          />
           {signedIn ? (
             <HoldButton ticker={company.ticker} held={held} />
           ) : (
@@ -199,13 +212,20 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
       </header>
 
       {signedIn ? (
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs
+          value={tab}
+          onValueChange={(t) =>
+            navigate({ search: t === "overview" ? {} : { tab: t as Tab }, replace: true, resetScroll: false })
+          }
+          className="space-y-6"
+        >
           <TabsList className="research-tabs">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="changes">What changed</TabsTrigger>
             <TabsTrigger value="signals">Signals</TabsTrigger>
             <TabsTrigger value="news">News</TabsTrigger>
             <TabsTrigger value="competitors">Competitors</TabsTrigger>
+            <TabsTrigger value="ask">Ask</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-8">
             {overview}
@@ -221,6 +241,9 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
           </TabsContent>
           <TabsContent value="competitors">
             <CompetitorComparison ticker={company.ticker} />
+          </TabsContent>
+          <TabsContent value="ask">
+            <AskPanel ticker={company.ticker} name={company.name} />
           </TabsContent>
         </Tabs>
       ) : (

@@ -9,7 +9,8 @@ import { CompanySearch } from "@/components/CompanySearch";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { portfolioQuery } from "@/lib/edgar-queries";
-import { addHolding, loadDemoPortfolio, removeHolding } from "@/lib/portfolio.functions";
+import { addHolding, loadDemoPortfolio } from "@/lib/portfolio.functions";
+import { useRemoveHolding } from "@/lib/use-remove-holding";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({ meta: [
@@ -29,7 +30,7 @@ function Onboarding() {
   const { data } = useQuery(portfolioQuery());
   const add = useServerFn(addHolding);
   const demo = useServerFn(loadDemoPortfolio);
-  const remove = useServerFn(removeHolding);
+  const remove = useRemoveHolding();
   const [busy, setBusy] = useState<string | null>(null);
 
   const finish = async () => {
@@ -86,10 +87,7 @@ function Onboarding() {
               type="button"
               aria-label={`Remove ${h.ticker}`}
               className="ml-auto rounded p-1 text-muted-foreground hover:text-foreground"
-              onClick={async () => {
-                await remove({ data: { id: h.id } });
-                await qc.invalidateQueries({ queryKey: ["portfolio"] });
-              }}
+              onClick={() => remove(h)}
             >
               <X className="size-4" />
             </button>
