@@ -1,3 +1,7 @@
 - [x] Apply saved colors, fonts, logo and page-title branding.
 - [x] Verify the refreshed public and signed-in pages.
 - [x] Request publication of the updated branding; deployment completion is pending.
+- [ ] Build SEC-backed company story timeline.
+- [ ] Build comparison with up to five companies and five metrics.
+- [ ] Build shared portfolio risk disclosures with source passages.
+- [ ] Test Phase 3 and verify the signed-in flow for all four demo companies.
