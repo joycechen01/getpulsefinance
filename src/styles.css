@@ -180,18 +180,35 @@
 @utility animate-pulse-dot { animation: none; }
 @keyframes ledger-fade { from { opacity: 0; } to { opacity: 1; } }
 
-/* Shared brand treatment also covers portalled controls and existing page utilities. */
+
+/* ===== Type scale (single source) =====
+   h1 40/32 · h2 24/20 · h3 16/15 · body 15 · controls 14 · meta 11-12 (mono)
+   Fraunces for app h1/h2; IBM Plex Sans for h3, body, controls and all landing headings;
+   IBM Plex Mono with tabular numerals for figures. Weights 400/500 only. */
 @layer base {
   body { font-size: 15px; line-height: 1.6; }
   * { letter-spacing: 0; }
-  h1 { font-size: 40px; line-height: 1.15; font-weight: 500; overflow-wrap: anywhere; }
-  h2 { font-size: 24px; line-height: 1.3; }
-  h3, th { font-family: var(--font-sans); font-weight: 500; }
   b, strong { font-weight: 500; }
   em { font-style: normal; }
   a:not([data-slot="button"]):not([class*="bg-primary"]) { color: var(--teal); }
-  button, input, textarea { font-family: var(--font-sans); }
+  button, input, textarea, select { font-family: var(--font-sans); }
 }
+/* Unlayered so they win over one-off size utilities on headings. */
+h1 { font-family: var(--font-display); font-size: 40px; line-height: 1.15; font-weight: 500; overflow-wrap: anywhere; }
+h2 { font-family: var(--font-display); font-size: 24px; line-height: 1.3; font-weight: 500; }
+h3, th { font-family: var(--font-sans); font-weight: 500; }
+h3 { font-size: 16px; line-height: 1.4; }
+.eyebrow { font-family: var(--font-mono); font-size: 11px; }
+.figure { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.figure.text-3xl { font-size: 28px; font-weight: 500; }
+.recharts-cartesian-axis-tick-value { font-family: var(--font-sans); font-size: 12px; fill: var(--color-muted-foreground); }
+@media (max-width: 767px) {
+  h1 { font-size: 32px; }
+  h2 { font-size: 20px; }
+  h3 { font-size: 15px; }
+  .figure.text-3xl { font-size: 22px; }
+}
+
 .panel { box-shadow: none; }
 .panel:hover { border-color: var(--color-rule); }
 [class*="shadow"] { box-shadow: none !important; }
@@ -201,93 +218,45 @@
 [class*="tracking-"] { letter-spacing: 0; }
 header.sticky { background: var(--color-surface); backdrop-filter: none; }
 main.max-w-7xl, main.max-w-6xl, header > .max-w-7xl { max-width: 1200px; }
-.figure { font-variant-numeric: tabular-nums; }
-.figure.text-3xl { font-size: 28px; font-weight: 500; }
-.recharts-cartesian-axis-tick-value { font-family: var(--font-sans); font-size: 12px; fill: var(--color-muted-foreground); }
 .recharts-cartesian-grid line { stroke: var(--color-rule); }
 .compare-chart .recharts-cartesian-grid line { stroke: #E4E0D6; }
 .recharts-surface:focus, .recharts-wrapper:focus { outline: none; }
-@media (max-width: 767px) {
-  h1 { font-size: 32px; }
-  h2 { font-size: 22px; }
-  .figure.text-3xl { font-size: 22px; }
-  .grid.sm\:grid-cols-2 { grid-template-columns: minmax(0, 1fr); }
-}
+@media (max-width: 767px) { .grid.sm\:grid-cols-2 { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
-
-/* Landing typography: one editorial headline, quiet sans-serif supporting roles. */
-.landing-page .landing-card-title {
-  font-family: var(--font-display);
-  font-size: 14px !important;
-  font-weight: 500;
-  line-height: 1.6;
-}
 
 /* Publication hierarchy: mastheads, ruled navigation and unframed sections. */
 .editorial-masthead { border-bottom: 2px solid var(--foreground); padding-bottom: 32px; }
-.editorial-masthead h1 { font-size: 40px; }
 .editorial-masthead .eyebrow { color: var(--primary); margin-bottom: 8px; }
 .editorial-section { border-top: 1px solid var(--foreground); padding-top: 24px; }
 .company-metrics { gap: 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--surface); }
 .company-metrics > article { border: 0; border-radius: 0; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); min-height: 152px; }
 .research-tabs { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px 16px; width: 100%; height: auto; background: transparent; border-radius: 0; border-bottom: 1px solid var(--border); padding: 0; }
-.research-tabs > button { border-radius: 0; padding: 12px 4px; border-bottom: 2px solid transparent; background: transparent; }
+.research-tabs > button { border-radius: 0; padding: 12px 4px; border-bottom: 2px solid transparent; background: transparent; font-size: 14px; }
 .research-tabs > button[data-state="active"] { color: var(--primary); border-bottom-color: var(--primary); background: transparent; }
 .editorial-research > section { border-top: 1px solid var(--foreground); border-bottom: 0; padding-top: 24px; }
 .editorial-research h2 { margin-bottom: 8px; }
 .metric-groups > section { border: 0; border-radius: 0; border-top: 1px solid var(--foreground); background: transparent; padding: 24px 0 0; }
-.auth-page h1 { font-size: 32px; }
-.landing-page .landing-title { font-size: 56px; line-height: 1.1; }
-.landing-page .landing-tagline { font-family: var(--font-display); font-size: 24px; }
-.landing-intro { padding: 48px 0 32px; text-align: center; }
-.landing-page .landing-intro .landing-title { font-size: 64px; }
-.landing-page .landing-intro .landing-tagline { font-size: 32px; }
-.landing-search input { min-height: 52px; font-size: 15px; background: var(--surface); }
-.landing-companies { background: var(--background); }
-.landing-companies a { transition: background-color 150ms ease; }
-.landing-companies a:hover { background: var(--accent); }
-.landing-preview h2 { font-size: 32px; }
 @media (max-width: 767px) {
-  .editorial-masthead h1 { font-size: 32px; }
   .editorial-masthead { padding-bottom: 24px; }
-  .landing-page .landing-title { font-size: 40px; }
-  .landing-page .landing-tagline { font-size: 22px; }
   .research-tabs { gap: 0 12px; }
-  .research-tabs > button { font-size: 13px; }
   .company-metrics > article { min-height: 144px; }
-  .landing-intro { padding-top: 32px; }
-  .landing-page .landing-intro .landing-title { font-size: 40px; }
-  .landing-page .landing-intro .landing-tagline { font-size: 26px; }
-  .landing-preview h2 { font-size: 26px; }
-  .landing-preview img { min-height: 320px; object-fit: cover; object-position: top left; }
 }
 
-/* Restored annual-report typography and ledger framing. */
-.landing-intro { text-align: left; border-bottom: 2px solid var(--foreground); }
-.landing-intro .landing-search, .landing-intro p { margin-left: 0; margin-right: 0; }
-.landing-intro > div:last-child { justify-content: flex-start; }
-.landing-page .landing-intro .landing-title { font-size: 56px; }
-.landing-page .landing-intro .landing-tagline { font-size: 28px; color: var(--foreground); }
-.eyebrow { font-family: var(--font-mono); font-size: 11px; }
-.editorial-masthead h1 { font-family: var(--font-display); }
-.landing-companies h2, .landing-preview h2 { font-family: var(--font-display); }
-@media(max-width:767px) { .landing-page .landing-intro .landing-title { font-size: 40px; } .landing-page .landing-intro .landing-tagline { font-size: 24px; } }
-
-/* Landing-only modern typography; the research app retains Ledgerline fonts. */
+/* Landing: IBM Plex Sans headings (deliberate exception), larger hero. */
 .landing-dynamic { --font-display: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; }
-.landing-dynamic h1, .landing-dynamic h2, .landing-dynamic header .font-display, .landing-dynamic .landing-tagline { font-family: var(--font-sans); }
-.landing-dynamic .landing-intro { text-align: center; padding: 48px 0 32px; border-bottom: 0; }
-.landing-dynamic .landing-intro p, .landing-dynamic .landing-intro .landing-search { margin-left: auto; margin-right: auto; }
-.landing-dynamic .landing-intro > div:last-child { justify-content: center; }
-.landing-dynamic .landing-intro .landing-title { font-size: 64px; font-weight: 500; }
-.landing-dynamic .landing-intro .landing-tagline { font-size: 32px; color: var(--primary); font-weight: 400; }
+.landing-dynamic h1, .landing-dynamic h2 { font-family: var(--font-sans); }
+.landing-intro { text-align: center; padding: 48px 0 32px; }
+.landing-intro p, .landing-intro .landing-search { margin-left: auto; margin-right: auto; }
+.landing-intro > div:last-child { justify-content: center; }
+.landing-dynamic .landing-title { font-size: 64px; line-height: 1.1; }
+.landing-search input { min-height: 52px; font-size: 15px; background: var(--surface); }
 .landing-live { padding: 48px 0; }
 .landing-tabs { display: flex; flex-wrap: wrap; gap: 4px 24px; border-bottom: 1px solid var(--border); }
 .landing-tab { padding: 10px 2px; font-size: 15px; color: var(--muted-foreground); border-bottom: 2px solid transparent; margin-bottom: -1px; background: transparent; cursor: pointer; transition: color 150ms ease, border-color 150ms ease; }
 .landing-tab:hover { color: var(--foreground); }
 .landing-tab[aria-selected="true"] { color: var(--primary); border-bottom-color: var(--primary); }
 .landing-financials { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,3fr); gap: 48px; padding-top: 32px; }
-.landing-financial-value { font-family: var(--font-sans); font-size: 40px; line-height: 1.2; }
+.landing-financial-value { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 40px; line-height: 1.2; }
 .landing-chart { padding-top: 24px; }
 .landing-bars { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0,1fr); gap: 12px; height: 180px; border-bottom: 1px solid var(--border); }
 .landing-bar-track { height: 180px; color: var(--primary); }
@@ -308,9 +277,8 @@ main.max-w-7xl, main.max-w-6xl, header > .max-w-7xl { max-width: 1200px; }
 .landing-closing h2 { font-size: 40px; line-height: 1.15; }
 @media(max-width:767px) {
  .landing-dynamic header .landing-cta { padding-inline: 8px; font-size: 11px; }
- .landing-dynamic .landing-intro { padding-top: 32px; }
- .landing-dynamic .landing-intro .landing-title { font-size: 40px; }
- .landing-dynamic .landing-intro .landing-tagline { font-size: 26px; }
+ .landing-intro { padding-top: 32px; }
+ .landing-dynamic .landing-title { font-size: 40px; }
  .landing-tabs { flex-wrap: nowrap; overflow-x: auto; gap: 20px; }
  .landing-tab { flex-shrink: 0; font-size: 14px; }
  .landing-financials { grid-template-columns: minmax(0,1fr); gap: 16px; }

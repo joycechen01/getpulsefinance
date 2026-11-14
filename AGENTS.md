@@ -48,3 +48,4 @@ use the editor.
 - Landing research uses the existing public company query and pure metric helpers; this keeps interactive previews SEC-backed without exposing portfolio data or introducing another calculation path.
 - Holdings quotes use an authenticated owner-scoped function and server-only Finnhub connector gateway helper; credentials stay in request headers, validated provider values preserve day changes and timestamps, and browser queries refresh every five minutes without durable worker state.
 - Company News uses an authenticated function and server-only Finnhub company-news helper with a short in-memory cache; headlines are labeled outside news, never SEC evidence or AI-rewritten.
+- Typography uses one type scale in the "Type scale" block of `src/styles.css` (unlayered h1/h2/h3 rules override size utilities); add new sizes there instead of per-page overrides so headings stay consistent.
