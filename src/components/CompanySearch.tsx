@@ -6,9 +6,15 @@ import { useEffect, useRef, useState } from "react";
 import { searchQuery } from "@/lib/edgar-queries";
 import { cn } from "@/lib/utils";
 
-const QUICK = ["AAPL", "MSFT", "NVDA", "AMZN", "JPM", "KO"];
-
-export function CompanySearch({ current }: { current: string }) {
+export function CompanySearch({
+  onPick,
+  placeholder = "Search a company or ticker — e.g. Nvidia, CRWD",
+  quick = [],
+}: {
+  onPick?: (ticker: string) => void;
+  placeholder?: string;
+  quick?: string[];
+}) {
   const navigate = useNavigate();
   const [text, setText] = useState("");
   const [debounced, setDebounced] = useState("");
@@ -34,11 +40,12 @@ export function CompanySearch({ current }: { current: string }) {
   const go = (ticker: string) => {
     setOpen(false);
     setText("");
-    navigate({ to: "/", search: (prev) => ({ ...prev, ticker }) });
+    if (onPick) onPick(ticker);
+    else navigate({ to: "/company/$ticker", params: { ticker } });
   };
 
   return (
-    <div className="w-full max-w-xl">
+    <div className="w-full">
       <div ref={boxRef} className="relative">
         <label htmlFor="company-search" className="sr-only">
           Search a company or ticker
@@ -48,7 +55,7 @@ export function CompanySearch({ current }: { current: string }) {
           id="company-search"
           value={text}
           autoComplete="off"
-          placeholder="Search a company or ticker — e.g. Nvidia, KO"
+          placeholder={placeholder}
           onChange={(e) => {
             setText(e.target.value);
             setOpen(true);
@@ -67,7 +74,7 @@ export function CompanySearch({ current }: { current: string }) {
               if (pick) go(pick.toUpperCase());
             } else if (e.key === "Escape") setOpen(false);
           }}
-          className="h-12 w-full rounded-md border border-input bg-card pr-4 pl-10 text-base shadow-card outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-ring/25"
+          className="h-11 w-full rounded-md border border-input bg-surface pr-4 pl-10 text-sm shadow-card outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-ring/25"
         />
         {open && debounced && (
           <ul
@@ -101,24 +108,23 @@ export function CompanySearch({ current }: { current: string }) {
           </ul>
         )}
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-        <span className="eyebrow mr-1">Try</span>
-        {QUICK.map((t) => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => go(t)}
-            className={cn(
-              "rounded-sm border px-2 py-0.5 font-mono text-xs transition-colors",
-              t === current
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-input text-muted-foreground hover:border-foreground hover:text-foreground",
-            )}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
+      {quick.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          <span className="eyebrow mr-1">Try</span>
+          {quick.map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => go(t)}
+              className={cn(
+                "rounded-sm border border-input px-2 py-0.5 font-mono text-xs text-muted-foreground transition-colors hover:border-primary hover:text-foreground",
+              )}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
