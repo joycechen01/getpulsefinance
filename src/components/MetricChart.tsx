@@ -1,10 +1,10 @@
 import {
-  Area,
-  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
   Cell,
+  Line,
+  LineChart,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
@@ -13,52 +13,26 @@ import {
   type TooltipProps,
 } from "recharts";
 
-import type { MetricKey, PeriodRow } from "@/lib/edgar-parse";
-import { formatDate, formatMoney, formatPct } from "@/lib/format";
-import { cn } from "@/lib/utils";
+import type { SeriesPoint } from "@/lib/metrics";
+import { formatDate } from "@/lib/format";
 
-export type MetricConfig = {
-  key: MetricKey;
-  title: string;
-  kind: "bar" | "area";
-  color: string;
-  note: string;
-};
+export type ChartPoint = SeriesPoint & { change: string | null };
 
 function ChartTooltip({
   active,
   payload,
-  metric,
-  currency,
-}: TooltipProps<number, string> & { metric: MetricConfig; currency: string }) {
-  const row = payload?.[0]?.payload as PeriodRow | undefined;
-  if (!active || !row) return null;
-  const value = row[metric.key];
-  const growth = formatPct(row[`${metric.key}YoY` as const]);
-  const derived =
-    metric.key !== "assets" && row[`${metric.key}Derived` as "revenueDerived" | "netIncomeDerived"];
+  fmt,
+}: TooltipProps<number, string> & { fmt: (v: number | null) => string }) {
+  const p = payload?.[0]?.payload as ChartPoint | undefined;
+  if (!active || !p) return null;
   return (
     <div className="min-w-44 rounded-md border border-input bg-popover px-3 py-2.5 shadow-pop">
-      <div className="eyebrow">{row.label}</div>
-      <div className="figure mt-1 text-lg font-medium">{formatMoney(value, currency)}</div>
-      {growth && (
-        <div
-          className={cn(
-            "figure text-xs",
-            (row[`${metric.key}YoY` as const] ?? 0) >= 0 ? "text-positive" : "text-destructive",
-          )}
-        >
-          {growth} vs. prior year
-        </div>
-      )}
-      <div className="mt-1.5 text-xs text-muted-foreground">
-        {metric.key === "assets" ? "As of " : "Period ended "}
-        {formatDate(row.end)}
-      </div>
-      {derived && (
-        <div className="mt-1 text-xs text-muted-foreground italic">
-          Derived: full year minus Q1–Q3
-        </div>
+      <div className="eyebrow">{p.label}</div>
+      <div className="figure mt-1 text-lg">{p.value == null ? "Not reported" : fmt(p.value)}</div>
+      {p.change && <div className="figure text-xs text-muted-foreground">{p.change} vs. year ago</div>}
+      <div className="mt-1.5 text-xs text-muted-foreground">Period ended {formatDate(p.end)}</div>
+      {p.derived && (
+        <div className="mt-1 text-xs text-muted-foreground italic">Derived from year-to-date / full-year totals</div>
       )}
     </div>
   );
@@ -66,95 +40,62 @@ function ChartTooltip({
 
 export function MetricChart({
   data,
-  metric,
-  currency,
-  syncId,
+  kind,
+  fmt,
+  axisFmt,
+  color = "var(--color-chart-1)",
+  height = 240,
 }: {
-  data: PeriodRow[];
-  metric: MetricConfig;
-  currency: string;
-  syncId: string;
+  data: ChartPoint[];
+  kind: "bar" | "line";
+  fmt: (v: number | null) => string;
+  axisFmt: (v: number) => string;
+  color?: string;
+  height?: number;
 }) {
-  const axisFmt = (v: number) => formatMoney(v, currency, 0);
-  const hasNegative = data.some((r) => (r[metric.key] ?? 0) < 0);
-  const common = {
-    data,
-    syncId,
-    margin: { top: 8, right: 4, bottom: 0, left: 0 },
-  };
-  // Recharts 2 ignores children wrapped in fragments, so pass these as a keyed array.
-  const axes = [
-    <CartesianGrid key="grid" vertical={false} strokeDasharray="2 4" />,
-    <XAxis
-      key="x"
-      dataKey="label"
-      tickLine={false}
-      axisLine={false}
-      minTickGap={18}
-      tickMargin={8}
-    />,
-    <YAxis
-      key="y"
-      tickFormatter={axisFmt}
-      tickLine={false}
-      axisLine={false}
-      width={64}
-      tickCount={5}
-    />,
+  const hasNeg = data.some((d) => (d.value ?? 0) < 0);
+  // Recharts 2 ignores children wrapped in fragments, so these are a keyed array.
+  const common = [
+    <CartesianGrid key="g" vertical={false} strokeDasharray="2 4" />,
+    <XAxis key="x" dataKey="label" tickLine={false} axisLine={false} minTickGap={18} tickMargin={8} />,
+    <YAxis key="y" tickFormatter={axisFmt} tickLine={false} axisLine={false} width={64} tickCount={5} />,
     <Tooltip
-      key="tip"
-      cursor={{
-        fill: "var(--color-accent)",
-        fillOpacity: 0.6,
-        stroke: "var(--color-rule)",
-        strokeOpacity: 0.3,
-      }}
-      content={<ChartTooltip metric={metric} currency={currency} />}
+      key="t"
+      cursor={{ fill: "var(--color-accent)", fillOpacity: 0.5, stroke: "var(--color-rule)" }}
+      content={<ChartTooltip fmt={fmt} />}
     />,
   ];
-
   return (
-    <ResponsiveContainer width="100%" height={260}>
-      {metric.kind === "bar" ? (
-        <BarChart {...common} barCategoryGap="18%">
-          {axes}
-          {hasNegative && <ReferenceLine y={0} stroke="var(--color-rule)" strokeOpacity={0.5} />}
-          <Bar dataKey={metric.key} radius={[2, 2, 0, 0]} isAnimationActive animationDuration={500}>
-            {data.map((r) => {
-              const v = r[metric.key] ?? 0;
-              const derived =
-                metric.key !== "assets" &&
-                r[`${metric.key}Derived` as "revenueDerived" | "netIncomeDerived"];
-              return (
-                <Cell
-                  key={r.key}
-                  fill={v < 0 ? "var(--color-destructive)" : metric.color}
-                  fillOpacity={derived ? 0.6 : 1}
-                />
-              );
-            })}
+    <ResponsiveContainer width="100%" height={height}>
+      {kind === "bar" ? (
+        <BarChart data={data} margin={{ top: 8, right: 4, bottom: 0, left: 0 }} barCategoryGap="20%">
+          {common}
+          {hasNeg && <ReferenceLine y={0} stroke="var(--color-rule)" />}
+          <Bar dataKey="value" radius={[2, 2, 0, 0]} animationDuration={450}>
+            {data.map((d) => (
+              <Cell
+                key={d.label}
+                fill={(d.value ?? 0) < 0 ? "var(--color-negative)" : color}
+                fillOpacity={d.derived ? 0.55 : 1}
+              />
+            ))}
           </Bar>
         </BarChart>
       ) : (
-        <AreaChart {...common}>
-          <defs>
-            <linearGradient id={`fill-${metric.key}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={metric.color} stopOpacity={0.35} />
-              <stop offset="100%" stopColor={metric.color} stopOpacity={0.02} />
-            </linearGradient>
-          </defs>
-          {axes}
-          <Area
+        <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+          {common}
+          {hasNeg && <ReferenceLine y={0} stroke="var(--color-rule)" />}
+          <Line
             type="monotone"
-            dataKey={metric.key}
-            stroke={metric.color}
+            dataKey="value"
+            stroke={color}
             strokeWidth={2}
-            fill={`url(#fill-${metric.key})`}
+            dot={false}
             connectNulls
             activeDot={{ r: 4, stroke: "var(--color-card)", strokeWidth: 2 }}
-            animationDuration={500}
+            animationDuration={450}
           />
-        </AreaChart>
+        </LineChart>
       )}
     </ResponsiveContainer>
   );

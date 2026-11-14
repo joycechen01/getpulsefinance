@@ -64,15 +64,15 @@ export const NET_INCOME_CONCEPTS = [
 ];
 export const ASSETS_CONCEPTS = ["us-gaap:Assets", "ifrs-full:Assets"];
 
-const PERIODIC_FORMS = /^(10-K|10-Q|10-KT|10-QT|20-F|40-F|6-K)(\/A)?$/;
+export const PERIODIC_FORMS = /^(10-K|10-Q|10-KT|10-QT|20-F|40-F|6-K)(\/A)?$/;
 // Annual totals only from annual reports: 10-Qs often carry trailing-twelve-month figures.
-const ANNUAL_FORMS = /^(10-K|10-KT|20-F|40-F)(\/A)?$/;
+export const ANNUAL_FORMS = /^(10-K|10-KT|20-F|40-F)(\/A)?$/;
 const DAY_MS = 86_400_000;
 
 function toTime(d: string) {
   return Date.parse(d + "T00:00:00Z");
 }
-function daysBetween(a: string, b: string) {
+export function daysBetween(a: string, b: string) {
   return Math.round((toTime(b) - toTime(a)) / DAY_MS) + 1;
 }
 
@@ -104,12 +104,12 @@ export function fiscalPeriodOf(
   return { fiscalYear, quarter };
 }
 
-function getConcept(json: CompanyFactsJson, id: string): Concept | undefined {
+export function getConcept(json: CompanyFactsJson, id: string): Concept | undefined {
   const [tax = "", name = ""] = id.split(":");
   return json.facts?.[tax]?.[name];
 }
 
-function pickCurrency(json: CompanyFactsJson): string {
+export function pickCurrency(json: CompanyFactsJson): string {
   const counts = new Map<string, number>();
   for (const id of [...REVENUE_CONCEPTS, ...NET_INCOME_CONCEPTS, ...ASSETS_CONCEPTS]) {
     const c = getConcept(json, id);
@@ -146,7 +146,7 @@ function orderedConcepts(json: CompanyFactsJson, ids: string[], currency: string
 }
 
 /** Keep the latest-filed value for each identical period (restatements win). */
-function latestByPeriod(facts: Fact[], keyOf: (f: Fact) => string) {
+export function latestByPeriod(facts: Fact[], keyOf: (f: Fact) => string) {
   const map = new Map<string, Fact>();
   for (const f of facts) {
     const k = keyOf(f);
@@ -169,7 +169,7 @@ const parseQKey = (k: string): [number, number] => {
   return [Number(fy), Number(q)];
 };
 
-function detectFyEndMonth(json: CompanyFactsJson, currency: string): number {
+export function detectFyEndMonth(json: CompanyFactsJson, currency: string): number {
   let latest: Fact | undefined;
   for (const id of [...REVENUE_CONCEPTS, ...NET_INCOME_CONCEPTS]) {
     for (const f of getConcept(json, id)?.units[currency] ?? []) {
