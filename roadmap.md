@@ -18,3 +18,5 @@
 - [x] Restore the initial Ledgerline visual design while retaining Pulse Finance naming and all current features; desktop/mobile verified.
 - [x] Redesign only the landing page with sans-serif headline typography and interactive SEC-backed company research; mobile and desktop verified.
 - [x] Link Finnhub and use secure gateway quotes for holdings price and day change; verified all four real holdings, desktop/mobile and four quote tests.
+- [ ] Investigate blank holdings prices in the published app.
+- [ ] Replace the company story operating-margin graph with a simple dated, cited timeline; verify desktop and mobile.
