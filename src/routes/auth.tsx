@@ -1,4 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -81,6 +82,12 @@ function AuthPage() {
   return (
     <div className="auth-page flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm animate-rise border-t-2 border-foreground py-8">
+        <Link
+          to="/"
+          className="mb-6 flex w-fit items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" /> Back to home
+        </Link>
         <PulseLogo size={28} color="var(--color-primary)" />
         <h1 className="mt-6 text-3xl">{mode === "signin" ? "Welcome back" : "Create your account"}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
