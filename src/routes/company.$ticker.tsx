@@ -15,6 +15,8 @@ import { CompanySearch } from "@/components/CompanySearch";
 import { AskPanel } from "@/components/research/AskPanel";
 import { RedlineView } from "@/components/research/RedlineView";
 import { SignalsPanel } from "@/components/research/SignalsPanel";
+import { StoryTimeline } from "@/components/research/StoryTimeline";
+import { CompetitorComparison } from "@/components/research/CompetitorComparison";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
@@ -202,6 +204,8 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
             <TabsTrigger value="changes">What changed</TabsTrigger>
             <TabsTrigger value="signals">Signals</TabsTrigger>
             <TabsTrigger value="ask">Ask</TabsTrigger>
+            <TabsTrigger value="story">Story timeline</TabsTrigger>
+            <TabsTrigger value="competitors">Competitors</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-8">
             {overview}
@@ -214,6 +218,12 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
           </TabsContent>
           <TabsContent value="ask">
             <AskPanel ticker={company.ticker} name={company.name} />
+          </TabsContent>
+          <TabsContent value="story">
+            <StoryTimeline ticker={company.ticker} fin={fin} sourceUrl={filings[0] ? secDocUrl(company.cik, filings[0].accession, filings[0].primary_document) : `https://www.sec.gov/edgar/browse/?CIK=${company.cik}`} />
+          </TabsContent>
+          <TabsContent value="competitors">
+            <CompetitorComparison ticker={company.ticker} />
           </TabsContent>
         </Tabs>
       ) : (
