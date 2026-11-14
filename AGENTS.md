@@ -33,4 +33,6 @@ use the editor.
 
 - SEC EDGAR is fetched only from server code in `src/lib/edgar.server.ts` (exposed via `src/lib/edgar.functions.ts`); the SEC requires a contact User-Agent (overridable with `SEC_USER_AGENT`) and ~10 req/s, so responses are cached in memory.
 - XBRL-to-period logic lives in the pure module `src/lib/edgar-parse.ts` with unit tests beside it; keep it free of I/O so it stays testable.
-- Chart/page state (ticker, period, range) lives in URL search params on `/` so views are shareable and the loader only refetches when the ticker changes.
+- Metric extraction (tag fallbacks, YTD->quarter, Q4 derivation, gross-profit fallback, TTM) lives in pure `src/lib/metrics.ts` with tests; ratios are computed in code, never by AI.
+- SEC data is cached in shared tables (`companies`, `filings`, `financial_facts`) written only by server code via the admin client in `company.server.ts`; user tables (`profiles`, `holdings`) are owner-only via RLS.
+- Metric tooltip text comes only from `src/lib/glossary.ts`; never generated at runtime.
