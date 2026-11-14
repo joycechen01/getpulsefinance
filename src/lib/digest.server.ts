@@ -32,4 +32,25 @@ export async function gmail(path:string,method="GET",body?:object) {
   if(!res.ok){const error=await res.text();console.error(`Gmail failed [${res.status}]`,error);throw new Error(`Gmail request failed (${res.status}): ${error}`);}
   return res.json() as Promise<{emailAddress?:string;messages?:{id:string}[];id?:string}>;
 }
-export const sendsInFlight=new Set<string>();
+export async function deliverDigest(userId:string,recipient:string,digest:EarningsDigest) {
+  const {digestMessageId,rawDigestEmail}=await import("./digest");
+  const period=digest.filing.report_date??digest.period;
+  const id=digestMessageId(digest.ticker,period);
+  const {data:previous,error:readError}=await supabaseAdmin.from("digest_deliveries").select("status").eq("user_id",userId).eq("ticker",digest.ticker).eq("period_end",period).maybeSingle();
+  if(readError)throw readError;
+  if(previous?.status==="sent")return {alreadySent:true};
+  if(previous?.status==="sending"||previous?.status==="uncertain")throw new Error("This digest's delivery is pending or unconfirmed. Check Gmail Sent mail before attempting another send.");
+  if(previous?.status==="failed")throw new Error("This delivery failed. Check delivery history before retrying.");
+  const {error:claimError}=await supabaseAdmin.from("digest_deliveries").insert({user_id:userId,ticker:digest.ticker,period_end:period,accession:digest.filing.accession,recipient,status:"sending"});
+  if(claimError){if(claimError.code==="23505")throw new Error("This company’s digest is already being processed for this period.");throw claimError;}
+  const update=(values:{status:string;gmail_id?:string;sent_at?:string;error?:string})=>supabaseAdmin.from("digest_deliveries").update(values).eq("user_id",userId).eq("ticker",digest.ticker).eq("period_end",period);
+  try{
+    const sent=await gmail(`messages?q=${encodeURIComponent(`in:sent rfc822msgid:${id}`)}&maxResults=1`);
+    if(sent.messages?.length){const saved=await update({status:"sent",gmail_id:sent.messages[0]?.id??"",sent_at:new Date().toISOString()});if(saved.error)throw saved.error;return {alreadySent:true};}
+    const result=await gmail("messages/send","POST",{raw:rawDigestEmail(digest,recipient,id)});
+    if(!result.id)throw new Error("Gmail did not confirm the send.");
+    const saved=await update({status:"sent",gmail_id:result.id,sent_at:new Date().toISOString()});
+    if(saved.error)throw new Error("Gmail accepted the email, but delivery history could not be saved. Do not resend.");
+    return {alreadySent:false};
+  }catch(e){await update({status:"uncertain",error:e instanceof Error?e.message:"Delivery not confirmed"});throw e;}
+}
