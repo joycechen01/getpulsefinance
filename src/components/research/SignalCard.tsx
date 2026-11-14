@@ -17,8 +17,8 @@ const CONF_TONE: Record<string, string> = {
   Low: "text-muted-foreground border-border",
 };
 
-export function CitationItem({ c, label }: { c: Citation; label?: string }) {
-  const [open, setOpen] = useState(false);
+export function CitationItem({ c, label, defaultOpen = false }: { c: Citation; label?: string; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <li className="rounded-md border bg-background/40">
       <Button
