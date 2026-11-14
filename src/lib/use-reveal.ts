@@ -14,6 +14,7 @@ export function useReveal(index = 0) {
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
           el.classList.add("is-visible");
+          el.querySelectorAll(".reveal").forEach((c) => c.classList.add("is-visible"));
           io.disconnect();
         }
       },
