@@ -50,6 +50,8 @@ const FEATURES = [
 
 function Landing() {
   const [signedIn, setSignedIn] = useState(false);
+  const featuresReveal = useReveal();
+  const closingReveal = useReveal();
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
   }, []);
@@ -86,16 +88,16 @@ function Landing() {
           </div>
         </section>
         <LandingResearch />
-        <section className="landing-features" aria-label="What Pulse Finance does">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="landing-feature reveal">
+        <section ref={featuresReveal.ref} className="landing-features" aria-label="What Pulse Finance does">
+          {FEATURES.map((f, i) => (
+            <div key={f.title} className="landing-feature reveal" style={{ transitionDelay: `${i * 100}ms` }}>
               <f.icon className="size-5 text-primary" aria-hidden />
               <h3 className="mt-3 text-base font-medium">{f.title}</h3>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{f.text}</p>
             </div>
           ))}
         </section>
-        <section className="landing-closing" aria-label="Get started">
+        <section ref={closingReveal.ref} className="landing-closing reveal" aria-label="Get started">
           <h2 className="font-display font-medium">Know what you own.</h2>
           <Button asChild className="mt-6">
             <Link to={signedIn ? "/home" : "/auth"}>
