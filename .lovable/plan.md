@@ -6,8 +6,11 @@
 - Add a "Select all" / "Clear" control above the filing-named competitor list.
 - Select all picks every matched competitor up to the 5-company limit (in filing order) and shows a note when more were named than can be compared.
 
+**Compact selection cards**
+- Show filing-named competitors as compact cards, three per row on desktop (one per row on phones): checkbox, name, ticker, evidence badge, with the filing quote tucked behind a small "Source" expander.
+
 **Trended comparison view**
-- Replace the single-period bar chart with a line chart: one line per company over the last 8–12 quarters, using rolling four-quarter (TTM) values for the chosen metric (revenue growth, gross margin, operating margin, R&D share, free-cash-flow margin).
+- Replace the single-period bar chart and metric picker with five stacked line charts you scroll through — revenue growth, gross margin, operating margin, R&D share, free-cash-flow margin — each with one line per company over the last 8–12 quarters (rolling four-quarter values).
 - The researched company is highlighted; peers use muted distinct colors and a legend you can click to hide/show a line.
 - Hovering a point shows every company's value for that quarter, plus the period end date.
 - Quarters a company did not report show a gap, never an estimate; the existing table stays below as the "latest" snapshot with SEC source links.
