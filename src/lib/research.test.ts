@@ -12,7 +12,7 @@ describe("Phase 3 research rules",()=>{
     expect(comparisonTTM({...fin,quarterly:rows.filter((_,i)=>i!==6)}).values.operatingMargin).toBeNull();
   });
   it("missing R&D remains missing instead of zero",()=>{
-    expect(comparisonTTM({...fin,quarterly:rows.map(r=>({...r,v:{...r.v,rnd:undefined}}))}).values.rndPct).toBeNull();
+    expect(comparisonTTM({...fin,quarterly:rows.map(r=>{const v={...r.v};delete v.rnd;return {...r,v};})}).values.rndPct).toBeNull();
   });
   it("permits five competitors and rejects six",()=>{
     expect(comparisonInput.safeParse({ticker:"NVDA",peers:Array(5).fill("AMD")}).success).toBe(true);
