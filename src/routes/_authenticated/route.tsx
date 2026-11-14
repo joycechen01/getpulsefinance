@@ -4,7 +4,7 @@ import { LogOut, Settings } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { CompanySearch } from "@/components/CompanySearch";
-import { Logo } from "@/components/Logo";
+import { PulseLogo } from "@/components/PulseLogo";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated")({

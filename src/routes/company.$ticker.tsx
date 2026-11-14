@@ -18,7 +18,7 @@ import { SignalsPanel } from "@/components/research/SignalsPanel";
 import { NewsPanel } from "@/components/research/NewsPanel";
 import { CompetitorComparison } from "@/components/research/CompetitorComparison";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Logo } from "@/components/Logo";
+import { PulseLogo } from "@/components/PulseLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { companyQuery } from "@/lib/edgar-queries";
 import { formatDate, formatMoney, monthName, secDocUrl } from "@/lib/format";
