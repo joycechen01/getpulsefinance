@@ -274,6 +274,7 @@ main.max-w-7xl, main.max-w-6xl, header > .max-w-7xl { max-width: 1200px; }
 
 /* Landing-only modern typography; the research app retains Ledgerline fonts. */
 .landing-dynamic { --font-display: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; }
+.landing-dynamic h1, .landing-dynamic h2, .landing-dynamic header .font-display, .landing-dynamic .landing-tagline { font-family: var(--font-sans); }
 .landing-dynamic .landing-intro { text-align: center; padding: 48px 0 32px; border-bottom: 0; }
 .landing-dynamic .landing-intro p, .landing-dynamic .landing-intro .landing-search { margin-left: auto; margin-right: auto; }
 .landing-dynamic .landing-intro > div:last-child { justify-content: center; }

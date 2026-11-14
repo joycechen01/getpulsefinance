@@ -21,6 +21,9 @@ export function LandingResearch() {
   const latest = latestWithYoY(rows,metric);
   const points = series(rows,metric).slice(-12);
   const max = Math.max(1,...points.map(p=>Math.abs(p.value??0)));
+  const hasNegative = points.some(p=>(p.value??0)<0);
+  const baseline = hasNegative ? 90 : 176;
+  const chartHeight = hasNegative ? 84 : 170;
   const filing = data?.filings.find(f=>f.form==="10-Q"||f.form==="10-K");
   const source = data ? filing ? secDocUrl(data.company.cik,filing.accession,filing.primary_document) : `https://www.sec.gov/edgar/browse/?CIK=${data.company.cik}` : null;
   return <section className="landing-live" aria-label="Company research">
@@ -38,7 +41,7 @@ export function LandingResearch() {
         <Button asChild variant="link" className="mt-6 px-0"><Link to="/company/$ticker" params={{ticker}}>Open company research <ArrowRight/></Link></Button>
       </div>
       <div className="landing-chart" aria-label={`${ticker} ${metric} quarterly history`}>
-        {result.isFetching ? <div className="h-48 animate-pulse rounded bg-muted"/> : <><div className="landing-bars">{points.map(p=><div key={p.end} className="landing-bar-track"><svg viewBox="0 0 24 180" preserveAspectRatio="none" role="img" aria-label={`${p.label}: ${fmtValue(p.value,"money",currency)}`}><title>{p.label}: {fmtValue(p.value,"money",currency)}</title><rect x="3" y={p.value!=null && p.value<0?146:146-((p.value??0)/max)*140} width="18" height={Math.max(0,Math.abs(p.value??0)/max*140)} rx="2" fill="currentColor"/></svg></div>)}</div><div className="mt-3 flex justify-between text-xs text-muted-foreground"><span>{points[0]?.label}</span><span>{points.at(-1)?.label}</span></div><p className="mt-3 text-xs text-muted-foreground">{metric==="revenue"?"Revenue":"Net income"} · Last 12 reported quarters</p></>}
+        {result.isFetching ? <div className="h-48 animate-pulse rounded bg-muted"/> : <><div className="landing-bars">{points.map(p=><div key={p.end} className="landing-bar-track"><svg viewBox="0 0 24 180" preserveAspectRatio="none" role="img" aria-label={`${p.label}: ${fmtValue(p.value,"money",currency)}`}><title>{p.label}: {fmtValue(p.value,"money",currency)}</title>{hasNegative&&<line x1="0" x2="24" y1={baseline} y2={baseline} stroke="var(--border)"/>}<rect x="3" y={(p.value??0)<0?baseline:baseline-((p.value??0)/max)*chartHeight} width="18" height={Math.max(0,Math.abs(p.value??0)/max*chartHeight)} rx="2" fill="currentColor"/></svg></div>)}</div><div className="mt-3 flex justify-between text-xs text-muted-foreground"><span>{points[0]?.label}</span><span>{points.at(-1)?.label}</span></div><p className="mt-3 text-xs text-muted-foreground">{metric==="revenue"?"Revenue":"Net income"} · Last 12 reported quarters</p></>}
       </div>
     </div>
   </section>;
