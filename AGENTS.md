@@ -40,7 +40,7 @@ use the editor.
 - Filing text: section extraction (`filing-sections.ts`) and change tagging (`redline.ts`) are pure, tested modules; passages, redlines and signals are cached once per filing in shared tables by `analysis.server.ts`, so AI runs at most once per filing.
 - All AI calls go through `src/lib/ai.server.ts` (streamed, strict schema); AI only cites passage ids it was given, never computes figures.
 
-- Keep shared visual roles in the light-only semantic theme and shared Logo component so brand updates propagate without changing financial logic.
+- Keep shared visual roles in the light-only semantic theme and shared Logo component, with editorial layout classes in global CSS; this keeps publication-style brand updates separate from financial logic.
 - Phase 3 filing research is cached per annual accession in server-only `filing_research` with no anon/authenticated grants or read policies; authenticated research functions expose scoped results, and pure `research.ts` validates literal competitor evidence, conservative SEC registrant matches, specific shared-risk keys and four-quarter TTM comparisons so AI never calculates figures or supplies outside competitors.
 - Gmail digests use authenticated on-demand server functions, require the signed-in email to match the connected mailbox, derive recipients from owner-only profiles, and atomically claim unique account/company/period delivery rows before calling Gmail; unconfirmed sends never retry automatically.
 - Phase 5 uses pure SEC item/CEO-CFO and fiscal-quarter validation; server-only event and transcript caches feed protected functions, event emails have separate opt-in and unique owner/accession claims, and transcript comparisons must cite both speaker passages and SEC passages.

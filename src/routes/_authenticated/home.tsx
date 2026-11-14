@@ -57,7 +57,8 @@ function Home() {
     );
   }
   if (pf.error) return <p className="text-destructive">{pf.error.message}</p>;
-  const data = pf.data!;
+  const data = pf.data;
+  if (!data) return null;
 
   const onPick = async (ticker: string) => {
     setAdding(ticker);
@@ -70,10 +71,10 @@ function Home() {
 
   return (
     <div className="space-y-8 animate-rise">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="editorial-masthead flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="eyebrow">Your portfolio · {data.holdings.length} holdings</div>
-          <h1 className="mt-1 text-4xl sm:text-5xl">Your portfolio</h1>
+          <h1 className="mt-1">Your portfolio</h1>
         </div>
         <div className="w-full sm:w-80">
           <CompanySearch onPick={onPick} placeholder="Add a holding…" />
@@ -85,14 +86,15 @@ function Home() {
         </div>
       </div>
 
-      <EarningsDigestPanel tickers={tickers} />
-      <MaterialEventsPanel tickers={tickers} />
-
       <HoldingsTable rows={data.holdings} quotes={quotes.data} quotesLoading={quotes.isLoading} />
+      <div className="editorial-research grid items-start gap-8 lg:grid-cols-[3fr_2fr]">
+        <EarningsDigestPanel tickers={tickers} />
+        <MaterialEventsPanel tickers={tickers} />
+      </div>
       <SharedRisksPanel tickers={tickers} />
 
-      <div className="grid gap-8">
-        <section className="panel p-5">
+      <div className="grid items-start gap-8 lg:grid-cols-[2fr_3fr]">
+        <section className="editorial-section">
           <h2 className="text-2xl">Recent SEC filing activity</h2>
           <ul className="mt-4 divide-y">
             {data.recentFilings.length === 0 && <li className="py-3 text-sm text-muted-foreground">No filings yet.</li>}
@@ -134,7 +136,7 @@ function HoldingsTable({
     ? Math.max(0, ...Object.values(quotes.quotes).map((q) => q?.at ?? 0))
     : 0;
   return (
-    <section className="panel overflow-hidden">
+    <section className="overflow-hidden border-y bg-surface">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4">
         <h2 className="text-2xl">Holdings</h2>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -288,7 +290,9 @@ function HoldingRow({
               </Button>
             </PopoverContent>
           </Popover>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             type="button"
             aria-label={`Remove ${r.ticker}`}
             className="rounded p-1.5 text-muted-foreground hover:bg-secondary hover:text-destructive"
@@ -298,7 +302,7 @@ function HoldingRow({
             }}
           >
             <Trash2 className="size-3.5" />
-          </button>
+          </Button>
         </div>
       </td>
     </tr>

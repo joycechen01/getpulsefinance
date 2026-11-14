@@ -79,8 +79,8 @@ function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center hero-glow px-4">
-      <div className="panel w-full max-w-sm animate-rise p-7">
+    <div className="auth-page flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-sm animate-rise border-t-2 border-foreground py-8">
         <Logo />
         <h1 className="mt-6 text-3xl">{mode === "signin" ? "Welcome back" : "Create your account"}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
