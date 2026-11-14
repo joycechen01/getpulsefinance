@@ -29,6 +29,13 @@
       "when": 1794688627948,
       "tag": "0003_restrict_filing_research_cache_access",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794689145244,
+      "tag": "0004_earnings_digest_deliveries",
+      "breakpoints": true
     }
   ]
 }
