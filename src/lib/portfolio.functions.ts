@@ -16,7 +16,7 @@ async function addOne(
   supabase: SupabaseClient<Database>,
   userId: string,
   ticker: string,
-  extra: { shares?: number | null; avgPrice?: number | null } = {},
+  extra: { shares?: number | null | undefined; avgPrice?: number | null | undefined } = {},
 ) {
   const { findTicker } = await import("./edgar.server");
   const { ensureCompany } = await import("./company.server");
