@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, FileText } from "lucide-react";
+import { ArrowRight, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { CompanySearch } from "@/components/CompanySearch";
+import { LandingResearch } from "@/components/LandingResearch";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,20 +31,13 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const COMPANIES = [
-  { ticker: "NVDA", name: "NVIDIA" },
-  { ticker: "CRWD", name: "CrowdStrike" },
-  { ticker: "INTC", name: "Intel" },
-  { ticker: "TSLA", name: "Tesla" },
-];
-
 function Landing() {
   const [signedIn, setSignedIn] = useState(false);
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
   }, []);
   return (
-    <div className="landing-page min-h-screen">
+    <div className="landing-page landing-dynamic min-h-screen">
       <header className="border-b bg-surface">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-4 md:px-6">
         <Logo />
@@ -70,27 +64,14 @@ function Landing() {
             <CompanySearch placeholder="Search a ticker or company, e.g. NVDA" />
           </div>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild variant="link">
+            <Button asChild variant="default">
               <Link to={signedIn ? "/home" : "/auth"}>
                 {signedIn ? "Open your portfolio" : "Create your free portfolio"} <ArrowRight />
               </Link>
             </Button>
           </div>
         </section>
-        <section className="landing-companies border-y py-6">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2>Start with a company</h2>
-            <span className="text-xs text-muted-foreground">Public filings. No account needed.</span>
-          </div>
-          <div className="mt-4 grid gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
-            {COMPANIES.map((c) => (
-              <Link key={c.ticker} to="/company/$ticker" params={{ticker:c.ticker}} className="group flex items-center justify-between gap-4 border-t py-4">
-                <span className="flex items-center gap-3"><span className="figure flex h-10 w-14 shrink-0 items-center justify-center rounded-md bg-accent text-xs text-primary">{c.ticker}</span><span className="font-display text-lg text-foreground">{c.name}</span></span>
-                <ArrowUpRight className="size-4 shrink-0 text-primary" />
-              </Link>
-            ))}
-          </div>
-        </section>
+        <LandingResearch />
 
       </main>
       <footer className="border-t py-6 text-center text-xs text-muted-foreground">
