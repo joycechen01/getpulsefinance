@@ -14,4 +14,4 @@
 - [ ] Daily material-event checks on hold at the user's request; scheduled job removed, on-demand reviews and emails retained.
 - [x] Apply the approved Crisp blue palette, Outfit/Figtree typography and publication-style app layouts.
 - [x] Verify redesigned public and signed-in screens on desktop and mobile.
-- [ ] Refine the landing page with a stronger introduction, company links and a real public research preview; verify desktop and mobile.
+- [x] Refine the landing page with a stronger introduction, company links and a real public research preview; verify desktop and mobile.
