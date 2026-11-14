@@ -106,7 +106,7 @@ function TrendChart({metric,label,term,rows}:{metric:ComparisonMetric;label:stri
   const [hover,setHover]=useState<string|null>(null);
   useLayoutEffect(()=>{
     const el=wrapRef.current;if(!el)return;
-    const ro=new ResizeObserver(es=>setWidth(es[0].contentRect.width));
+    const ro=new ResizeObserver(es=>{const e=es[0];if(e)setWidth(e.contentRect.width);});
     ro.observe(el);setWidth(el.getBoundingClientRect().width);
     return ()=>ro.disconnect();
   },[]);
