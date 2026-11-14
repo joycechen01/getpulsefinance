@@ -11,4 +11,4 @@
 - [x] Phase 5: material-event emails with a separate opt-in, SEC item filtering and duplicate protection.
 - [x] Phase 5: cited earnings-call summaries from Alpha Vantage, cached for the matching fiscal quarter.
 - [x] Test Phase 5 against real filings and available transcripts; leave remaining Phase 4 features on hold.
-- [x] Configure a daily bounded material-event check; activation requires publishing and explicit opt-in.
+- [ ] Daily material-event checks on hold at the user's request; remove the scheduled job and retain on-demand reviews and emails.
