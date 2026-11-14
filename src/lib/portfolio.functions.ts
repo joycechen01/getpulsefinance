@@ -217,40 +217,21 @@ export const removeHolding = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-export type Quote = { price: number; change: number; changePct: number; at: number };
-
-const quoteCache = new Map<string, { at: number; q: Quote | null }>();
+export type { Quote } from "./quotes.server";
 
 export const getQuotes = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ tickers: z.array(tickerSchema).max(50) }).parse(d))
-  .handler(async ({ data }) => {
-    const key = process.env["FINNHUB_API_KEY"];
-    if (!key) return { available: false as const, quotes: {} as Record<string, Quote | null> };
-    const quotes: Record<string, Quote | null> = {};
-    for (const t of data.tickers) {
-      const hit = quoteCache.get(t);
-      if (hit && Date.now() - hit.at < 5 * 60 * 1000) {
-        quotes[t] = hit.q;
-        continue;
-      }
-      try {
-        const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(t.replace("-", "."))}&token=${key}`);
-        if (!res.ok) {
-          console.error(`Finnhub quote failed [${res.status}]: ${(await res.text()).slice(0, 200)}`);
-          quotes[t] = null;
-          continue;
-        }
-        const j = (await res.json()) as { c: number; d: number; dp: number; t: number };
-        const q = j.c ? { price: j.c, change: j.d, changePct: j.dp, at: j.t * 1000 } : null;
-        quoteCache.set(t, { at: Date.now(), q });
-        quotes[t] = q;
-      } catch (e) {
-        console.error("Finnhub error", e);
-        quotes[t] = null;
-      }
-    }
-    return { available: true as const, quotes };
+  .handler(async ({ data, context }) => {
+    const { data: holdings, error } = await context.supabase.from("holdings").select("ticker").eq("user_id", context.userId);
+    if (error) throw new Error("Couldn’t load holdings for prices.");
+    const owned = new Set((holdings ?? []).map((h) => h.ticker));
+    const tickers = data.tickers.map((t) => t.toUpperCase()).filter((t) => owned.has(t));
+    const { fetchHoldingQuotes } = await import("./quotes.server");
+    return fetchHoldingQuotes(tickers, {
+      gatewayKey: process.env["LOVABLE_API_KEY"],
+      connectionKey: process.env["UDC_FINNHUB_API_KEY"],
+    });
   });
 
 /** Public, no sign-in: basic company info from the shared SEC cache. */

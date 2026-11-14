@@ -139,13 +139,16 @@ function HoldingsTable({
     <section className="overflow-hidden border-y bg-surface">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4">
         <h2 className="text-2xl">Holdings</h2>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <EvidenceBadge kind="market" compact />
           {quotes?.available
             ? `Prices from Finnhub${latestAt ? ` · as of ${new Date(latestAt).toLocaleString()}` : ""}`
             : quotesLoading
               ? "Loading prices…"
-              : "Prices unavailable: market-data key not connected yet"}
+              : "Prices temporarily unavailable"}
+          <a href="https://finnhub.io/docs/api/quote" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-primary">
+            Finnhub source <ExternalLink className="size-3" />
+          </a>
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -215,13 +218,13 @@ function HoldingRow({
         {quote ? (
           <div>
             <div className="figure">{formatPrice(quote.price)}</div>
-            <div className={cn("figure text-xs", quote.change >= 0 ? "text-positive" : "text-negative")}>
-              {quote.change >= 0 ? "+" : ""}
-              {quote.changePct.toFixed(2)}%
+            <div className="figure whitespace-nowrap text-xs text-muted-foreground">
+              {quote.change >= 0 ? "+" : "−"}{formatPrice(Math.abs(quote.change))}
+              {" ("}{quote.changePct >= 0 ? "+" : ""}{quote.changePct.toFixed(1)}%{ ")"}
             </div>
           </div>
         ) : (
-          <span className="text-xs text-muted-foreground">{quote === null ? "No quote" : "—"}</span>
+          <span className="text-xs text-muted-foreground">Not reported</span>
         )}
       </td>
       <td className="px-3 py-3 text-right">

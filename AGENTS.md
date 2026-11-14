@@ -46,3 +46,4 @@ use the editor.
 - Phase 5 uses pure SEC item/CEO-CFO and fiscal-quarter validation; server-only event and transcript caches feed protected functions, event emails have separate opt-in and unique owner/accession claims, and transcript comparisons must cite both speaker passages and SEC passages.
 
 - Landing research uses the existing public company query and pure metric helpers; this keeps interactive previews SEC-backed without exposing portfolio data or introducing another calculation path.
+- Holdings quotes use an authenticated owner-scoped function and server-only Finnhub connector gateway helper; credentials stay in request headers, validated provider values preserve day changes and timestamps, and browser queries refresh every five minutes without durable worker state.
