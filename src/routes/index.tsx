@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, FileSearch, FileText, LineChart } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { AsciiWave } from "@/components/AsciiWave";
 import { CompanySearch } from "@/components/CompanySearch";
 import { LandingResearch } from "@/components/LandingResearch";
 import { PulseLogo } from "@/components/PulseLogo";
@@ -57,7 +58,7 @@ function Landing() {
   }, []);
   return (
     <div className="landing-page landing-dynamic min-h-screen">
-      <header className="border-b bg-surface">
+      <header className="bg-surface">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-4 md:px-6">
           <PulseLogo size={28} color="var(--color-primary)" />
           <div className="flex items-center gap-2">
@@ -72,21 +73,30 @@ function Landing() {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-[1200px] px-4 md:px-6">
-        <section className="landing-intro animate-rise">
-          <div className="mb-4 inline-flex items-center gap-2 text-xs text-primary">
-            <FileText className="size-4" /> Built on official SEC filings
+      <main>
+        <section className="landing-hero" aria-label="Introduction">
+          <div className="landing-hero-wave" aria-hidden>
+            <div className="landing-hero-fade" />
+            <AsciiWave className="h-full w-full" speed={1} />
           </div>
-          <h1 className="landing-title font-display font-medium">Know what you own.</h1>
-          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground">
-            Behind every ticker is a company story. Follow the numbers, read what changed, and go straight to the
-            source.
-          </p>
-          <div className="landing-search mx-auto mt-8 max-w-xl text-left">
-            <CompanySearch placeholder="Search a ticker or company, e.g. NVDA" actionLabel="Look up" />
-            <div className="mt-2 text-center text-xs text-muted-foreground">No account needed</div>
+          <div className="relative z-10 mx-auto w-full max-w-[1200px] px-4 md:px-6">
+            <div className="landing-intro animate-rise">
+              <div className="mb-4 inline-flex items-center gap-2 text-xs text-primary">
+                <FileText className="size-4" /> Built on official SEC filings
+              </div>
+              <h1 className="landing-title font-display font-medium">Know what you own.</h1>
+              <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground">
+                Behind every ticker is a company story. Follow the numbers, read what changed, and go straight to the
+                source.
+              </p>
+              <div className="landing-search mx-auto mt-8 max-w-xl text-left">
+                <CompanySearch placeholder="Search a ticker or company, e.g. NVDA" actionLabel="Look up" />
+                <div className="mt-2 text-center text-xs text-muted-foreground">No account needed</div>
+              </div>
+            </div>
           </div>
         </section>
+        <div className="mx-auto max-w-[1200px] px-4 md:px-6">
         <LandingResearch />
         <section ref={featuresReveal.ref} className="landing-features" aria-label="What Pulse Finance does">
           {FEATURES.map((f, i) => (
@@ -105,6 +115,7 @@ function Landing() {
             </Link>
           </Button>
         </section>
+        </div>
       </main>
       <footer className="border-t py-6 text-center text-xs text-muted-foreground">
         <div className="mb-3 flex justify-center text-foreground">
