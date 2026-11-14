@@ -65,6 +65,8 @@ export const NET_INCOME_CONCEPTS = [
 export const ASSETS_CONCEPTS = ["us-gaap:Assets", "ifrs-full:Assets"];
 
 const PERIODIC_FORMS = /^(10-K|10-Q|10-KT|10-QT|20-F|40-F|6-K)(\/A)?$/;
+// Annual totals only from annual reports: 10-Qs often carry trailing-twelve-month figures.
+const ANNUAL_FORMS = /^(10-K|10-KT|20-F|40-F)(\/A)?$/;
 const DAY_MS = 86_400_000;
 
 function toTime(d: string) {
@@ -117,7 +119,6 @@ function pickCurrency(json: CompanyFactsJson): string {
       counts.set(unit, (counts.get(unit) ?? 0) + facts.length);
     }
   }
-  if (counts.has("USD")) return "USD";
   let best = "USD";
   let max = -1;
   for (const [u, n] of counts) if (n > max) [best, max] = [u, n];
@@ -168,7 +169,7 @@ function detectFyEndMonth(json: CompanyFactsJson, currency: string): number {
   let latest: Fact | undefined;
   for (const id of [...REVENUE_CONCEPTS, ...NET_INCOME_CONCEPTS]) {
     for (const f of getConcept(json, id)?.units[currency] ?? []) {
-      if (!f.start || !PERIODIC_FORMS.test(f.form)) continue;
+      if (!f.start || f.fp !== "FY" || !ANNUAL_FORMS.test(f.form)) continue;
       const len = daysBetween(f.start, f.end);
       if (len < 350 || len > 380) continue;
       if (!latest || f.end > latest.end) latest = f;
@@ -177,7 +178,7 @@ function detectFyEndMonth(json: CompanyFactsJson, currency: string): number {
   if (!latest) {
     for (const id of ASSETS_CONCEPTS) {
       for (const f of getConcept(json, id)?.units[currency] ?? []) {
-        if (f.fp === "FY" && /^(10-K|20-F|40-F)/.test(f.form) && (!latest || f.end > latest.end))
+        if (f.fp === "FY" && ANNUAL_FORMS.test(f.form) && (!latest || f.end > latest.end))
           latest = f;
       }
     }
@@ -212,7 +213,7 @@ function buildFlow(
           quarterly.set(k, v);
           used.add(c.id);
         }
-      } else if (len >= 350 && len <= 380 && fp.quarter === 4) {
+      } else if (len >= 350 && len <= 380 && fp.quarter === 4 && ANNUAL_FORMS.test(f.form)) {
         if (!annual.has(fp.fiscalYear)) {
           annual.set(fp.fiscalYear, v);
           used.add(c.id);
