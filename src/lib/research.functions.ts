@@ -5,14 +5,17 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import type { Citation } from "./analysis.functions";
 import type { Financials } from "./metrics";
-import { comparisonInput, comparisonTTM, comparisonTrend, matchRegistrant, MAX_COMPETITORS, sharedRiskGroups } from "./research";
+import { comparisonInput, comparisonTTM, comparisonTrend, matchRegistrant, MAX_COMPETITORS, ResearchError, sharedRiskGroups } from "./research";
 import { secDocUrl } from "./format";
 import type { SectionId } from "./filing-sections";
 
 type Client = SupabaseClient<Database>;
 const tickerInput = z.object({ ticker: z.string().trim().min(1).max(12) });
-const failure = (error: unknown) => {
+// Known causes (unsupported filer, unreadable filing, AI unavailable) keep their message; anything else stays generic.
+const failure = async (error: unknown) => {
   console.error("Phase 3 research failed", error);
+  const { AiError } = await import("./ai.server");
+  if (error instanceof ResearchError || error instanceof AiError) return { ok: false as const, error: error.message };
   return { ok: false as const, error: "SEC research could not be completed. Please try again shortly." };
 };
 
@@ -33,7 +36,7 @@ async function prepare(ticker: string) {
   const { findTicker } = await import("./edgar.server");
   const { ensureCompany } = await import("./company.server");
   const match = await findTicker(ticker);
-  if (!match) throw new Error("Unknown SEC ticker");
+  if (!match) throw new ResearchError(`“${ticker.toUpperCase()}” isn’t an SEC-registered ticker.`);
   await ensureCompany(match.cik, match.ticker, match.name);
   return match;
 }
@@ -41,7 +44,13 @@ async function prepare(ticker: string) {
 async function annualResearch(ticker: string, sb: Client) {
   const match = await prepare(ticker);
   const { data: filing, error } = await sb.from("filings").select("accession,cik,form,filing_date,report_date,primary_document,items").eq("cik",match.cik).eq("form","10-K").order("filing_date",{ascending:false}).limit(1).maybeSingle();
-  if (error || !filing) throw new Error("No annual filing available");
+  if (error) throw error;
+  if (!filing) {
+    const { count } = await sb.from("filings").select("accession",{count:"exact",head:true}).eq("cik",match.cik).eq("form","10-Q");
+    throw new ResearchError(count
+      ? `${match.name} hasn’t filed its first annual 10-K yet, so there’s no competition disclosure to read.`
+      : `Competitor research reads the annual 10-K that operating companies file. ${match.name} doesn’t file one, which is typical for ETFs, funds and trusts; foreign companies filing 20-F reports aren’t covered yet.`);
+  }
   const { ensureFilingResearch } = await import("./research.server");
   const research = await ensureFilingResearch(filing);
   return { match, filing, research };
@@ -53,7 +62,7 @@ export const getNamedCompetitors = createServerFn({method:"POST"}).middleware([r
     const { getTickers } = await import("./edgar.server");
     const list = await getTickers();
     const refs = await citations(context.supabase,research.competitors.flatMap(c=>c.passage_ids));
-    return {ok:true as const, filingDate:filing.filing_date, competitors:research.competitors.map(c=>{
+    return {ok:true as const, filingDate:filing.filing_date, coverage:research.coverage ?? null, competitors:research.competitors.map(c=>{
       const registrant = matchRegistrant(c.name,list);
       return {...c, registrant:registrant?.cik === match.cik ? null : registrant, citations:refs.filter(r=>c.passage_ids.includes(r.id))};
     })};

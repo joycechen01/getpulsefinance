@@ -53,3 +53,18 @@ describe("competitor trends", () => {
     expect(t[3]?.values.operatingMargin).toBeCloseTo(0.2);
   });
 });
+import { researchExcerpt } from "./research";
+describe("research excerpt budget", () => {
+  const p = (id:number,section:string,len=10)=>({id,section,body:"x".repeat(len)});
+  it("sends every passage and reports full coverage when the filing fits", () => {
+    const r = researchExcerpt([p(1,"risk"),p(2,"competition"),p(3,"risk")]);
+    expect(r.used.map(x=>x.id)).toEqual([2,1,3]);
+    expect(r.coverage).toBeNull();
+  });
+  it("keeps competition first and stops risk factors in filing order at the budget", () => {
+    const r = researchExcerpt([p(1,"risk",40),p(2,"risk",40),p(3,"competition",40),p(4,"risk",40)], 120);
+    expect(r.used.map(x=>x.id)).toEqual([3,1]);
+    expect(r.coverage).toEqual({riskUsed:1,riskTotal:3});
+    expect(r.text.length).toBeLessThanOrEqual(120);
+  });
+});

@@ -34,6 +34,35 @@ export function validateResearch(data: FilingResearch, passages: ResearchPassage
   };
 }
 
+/** A research failure whose message is safe to show users as-is. */
+export class ResearchError extends Error {
+  override name = "ResearchError";
+}
+
+// Stored alongside the AI result; absent on rows cached before partial reviews existed.
+export const ResearchCoverageSchema = z.object({ riskUsed: z.number().int(), riskTotal: z.number().int() });
+export type ResearchCoverage = z.infer<typeof ResearchCoverageSchema>;
+export const StoredResearchSchema = FilingResearchSchema.extend({ coverage: ResearchCoverageSchema.nullable().optional() });
+export type StoredResearch = z.infer<typeof StoredResearchSchema>;
+
+export const EXCERPT_LIMIT = 220000;
+const excerptLine = (p: ResearchPassage) => `[${p.id}] ${p.section}: ${p.body}`;
+/** Competition passages first, then risk factors in filing order, until the excerpt budget is spent. Never reorders or trims a passage. */
+export function researchExcerpt(passages: ResearchPassage[], limit = EXCERPT_LIMIT) {
+  const ordered = [...passages.filter(p => p.section === "competition"), ...passages.filter(p => p.section === "risk")];
+  const used: ResearchPassage[] = [];
+  let size = 0;
+  for (const p of ordered) {
+    const add = excerptLine(p).length + (used.length ? 2 : 0);
+    if (size + add > limit) break;
+    used.push(p);
+    size += add;
+  }
+  const riskTotal = passages.filter(p => p.section === "risk").length;
+  const riskUsed = used.filter(p => p.section === "risk").length;
+  return { text: used.map(excerptLine).join("\n\n"), used, coverage: riskUsed < riskTotal ? { riskUsed, riskTotal } : null };
+}
+
 const normalize = (s: string) => s.toLowerCase().replace(/\b(incorporated|inc|corporation|corp|company|co|limited|ltd|plc)\b/g, "").replace(/[^a-z0-9]/g, "");
 export function matchRegistrant<T extends { name: string; ticker: string; cik: number }>(name: string, list: T[]): T | null {
   const n = normalize(name);
