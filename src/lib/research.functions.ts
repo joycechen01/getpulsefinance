@@ -29,6 +29,12 @@ async function citations(sb: Client, ids: number[]): Promise<Citation[]> {
   });
 }
 
+// Per-company research is open to guests, so it reads the shared SEC tables server-side.
+async function shared(): Promise<Client> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  return supabaseAdmin;
+}
+
 async function prepare(ticker: string) {
   const { findTicker } = await import("./edgar.server");
   const { ensureCompany } = await import("./company.server");
@@ -47,12 +53,13 @@ async function annualResearch(ticker: string, sb: Client) {
   return { match, filing, research };
 }
 
-export const getNamedCompetitors = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator(d=>tickerInput.parse(d)).handler(async({data,context})=>{
+export const getNamedCompetitors = createServerFn({method:"POST"}).inputValidator(d=>tickerInput.parse(d)).handler(async({data})=>{
   try {
-    const { match, filing, research } = await annualResearch(data.ticker,context.supabase);
+    const sb = await shared();
+    const { match, filing, research } = await annualResearch(data.ticker,sb);
     const { getTickers } = await import("./edgar.server");
     const list = await getTickers();
-    const refs = await citations(context.supabase,research.competitors.flatMap(c=>c.passage_ids));
+    const refs = await citations(sb,research.competitors.flatMap(c=>c.passage_ids));
     return {ok:true as const, filingDate:filing.filing_date, competitors:research.competitors.map(c=>{
       const registrant = matchRegistrant(c.name,list);
       return {...c, registrant:registrant?.cik === match.cik ? null : registrant, citations:refs.filter(r=>c.passage_ids.includes(r.id))};
@@ -60,9 +67,10 @@ export const getNamedCompetitors = createServerFn({method:"POST"}).middleware([r
   } catch(e) { return failure(e); }
 });
 
-export const getComparison = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator(d=>comparisonInput.parse(d)).handler(async({data,context})=>{
+export const getComparison = createServerFn({method:"POST"}).inputValidator(d=>comparisonInput.parse(d)).handler(async({data})=>{
   try {
-    const { match, research } = await annualResearch(data.ticker,context.supabase);
+    const sb = await shared();
+    const { match, research } = await annualResearch(data.ticker,sb);
     const { getTickers } = await import("./edgar.server");
     const list = await getTickers();
     const allowed = research.competitors.map(c=>({...c, match:matchRegistrant(c.name,list)})).filter(c=>c.match && c.match.cik !== match.cik);
@@ -75,11 +83,11 @@ export const getComparison = createServerFn({method:"POST"}).middleware([require
     for (const target of unique) {
       try {
         await ensureCompany(target.cik,target.ticker,target.name);
-        const {data:f,error} = await context.supabase.from("financial_facts").select("data").eq("cik",target.cik).maybeSingle();
+        const {data:f,error} = await sb.from("financial_facts").select("data").eq("cik",target.cik).maybeSingle();
         if (error) throw error;
         const fin = f?.data as unknown as Financials | null;
         const ttm = comparisonTTM(fin);
-        const {data:filings} = await context.supabase.from("filings").select("accession,primary_document,report_date").eq("cik",target.cik).in("form",["10-Q","10-K"]).order("filing_date",{ascending:false}).limit(60);
+        const {data:filings} = await sb.from("filings").select("accession,primary_document,report_date").eq("cik",target.cik).in("form",["10-Q","10-K"]).order("filing_date",{ascending:false}).limit(60);
         const source = filings?.find(f=>f.report_date === ttm.end) ?? filings?.[0];
         rows.push({...target,...ttm,trend:comparisonTrend(fin,12),available:!!fin,currency:fin?.currency ?? null,url:source ? secDocUrl(target.cik,source.accession,source.primary_document):null});
       } catch(e) { console.error("Peer financials failed",target.ticker,e); rows.push({...target,...comparisonTTM(null),trend:comparisonTrend(null),available:false,currency:null,url:null}); }

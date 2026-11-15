@@ -112,7 +112,6 @@ export type ChangesResult =
   | { ok: false; error: string };
 
 export const getChanges = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ ticker: tickerSchema }).parse(d))
   .handler(async ({ data }): Promise<ChangesResult> => {
     try {
@@ -137,37 +136,10 @@ export const getChanges = createServerFn({ method: "POST" })
     }
   });
 
-/** Guest access to the shared risk-factor comparison (shared SEC tables only, no user data). */
-export const getChangesPublic = createServerFn({ method: "POST" })
-  .inputValidator((d) => z.object({ ticker: tickerSchema }).parse(d))
-  .handler(async ({ data }): Promise<ChangesResult> => {
-    try {
-      const match = await resolve(data.ticker);
-      if (!match) return { ok: false, error: "Unknown ticker." };
-      const { listFilings, pickComparable, ensureRedline } = await import("./analysis.server");
-      const pair = pickComparable(await listFilings(match.cik));
-      if (!pair) return { ok: false, error: "There aren’t two comparable 10-K or 10-Q filings to compare yet." };
-      const r = await ensureRedline(pair.cur, pair.prior);
-      if (!r) return { ok: false, error: "The risk factor and MD&A sections couldn’t be read from these filings." };
-      const meta = (f: typeof pair.cur): FilingMeta => ({
-        accession: f.accession,
-        form: f.form,
-        filing_date: f.filing_date,
-        report_date: f.report_date,
-        url: docUrl(f.cik, f.accession, f.primary_document),
-      });
-      return { ok: true, current: meta(pair.cur), prior: meta(pair.prior), changes: r.changes };
-    } catch (e) {
-      console.error("getChangesPublic failed", e);
-      return { ok: false, error: "The SEC filing couldn’t be loaded. Please try again shortly." };
-    }
-  });
-
 export type SignalsResult = { ok: true; signals: SignalView[]; analyzedAccession: string | null } | { ok: false; error: string };
 
 /** Detects signals for the latest periodic filing once (shared), then returns all stored signals. */
 export const getCompanySignals = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ ticker: tickerSchema }).parse(d))
   .handler(async ({ data }): Promise<SignalsResult> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -218,7 +190,6 @@ export type AnswerResult =
   | { ok: false; error: string };
 
 export const askCompany = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ ticker: tickerSchema, question: z.string().trim().min(3).max(500) }).parse(d))
   .handler(async ({ data }): Promise<AnswerResult> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

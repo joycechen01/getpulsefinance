@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ClientOnly, createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Check, ExternalLink, Loader2, Lock, Plus } from "lucide-react";
+import { Check, ExternalLink, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -148,32 +148,12 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
               ))}
             </section>
   
-            {signedIn ? (
-              <>
-                <TrendExplorer rows={rows} currency={cur} />
-                <section className="metric-groups grid gap-8 lg:grid-cols-2">
-                  {GROUPS.map((g) => (
-                    <MetricGroup key={g.title} title={g.title} specs={g.metrics} rows={rows} currency={cur} freq={freq} />
-                  ))}
-                </section>
-              </>
-            ) : (
-              <section className="panel flex flex-wrap items-center justify-between gap-4 p-6">
-                <div className="flex items-start gap-3">
-                  <Lock className="mt-1 size-4 text-primary" />
-                  <div>
-                    <h2 className="text-2xl">See the full picture with a free account</h2>
-                    <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-                      Build a portfolio, monitor several companies side by side, see what changed between filings, get signals on material developments, ask Pulse AI questions with citations, explore trend charts and every
-                      metric group (growth, profitability, cash, quality of earnings, balance sheet, per share).
-                    </p>
-                  </div>
-                </div>
-                <Button asChild>
-                  <Link to="/auth">Sign up free</Link>
-                </Button>
-              </section>
-            )}
+            <TrendExplorer rows={rows} currency={cur} />
+            <section className="metric-groups grid gap-8 lg:grid-cols-2">
+              {GROUPS.map((g) => (
+                <MetricGroup key={g.title} title={g.title} specs={g.metrics} rows={rows} currency={cur} freq={freq} />
+              ))}
+            </section>
           </>
         )}
   
@@ -211,44 +191,40 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </header>
 
-      {signedIn ? (
-        <Tabs
-          value={tab}
-          onValueChange={(t) =>
-            navigate({ search: t === "overview" ? {} : { tab: t as Tab }, replace: true, resetScroll: false })
-          }
-          className="space-y-6"
-        >
-          <TabsList className="research-tabs">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="changes">What changed</TabsTrigger>
-            <TabsTrigger value="signals">Signals</TabsTrigger>
-            <TabsTrigger value="news">News</TabsTrigger>
-            <TabsTrigger value="competitors">Competitors</TabsTrigger>
-            <TabsTrigger value="ask">Pulse AI</TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview" className="space-y-8">
-            {overview}
-          </TabsContent>
-          <TabsContent value="changes">
-            <RedlineView ticker={company.ticker} />
-          </TabsContent>
-          <TabsContent value="signals">
-            <SignalsPanel ticker={company.ticker} />
-          </TabsContent>
-          <TabsContent value="news">
-            <NewsPanel ticker={company.ticker} name={company.name} />
-          </TabsContent>
-          <TabsContent value="competitors">
-            <CompetitorComparison ticker={company.ticker} />
-          </TabsContent>
-          <TabsContent value="ask">
-            <AskPanel ticker={company.ticker} name={company.name} />
-          </TabsContent>
-        </Tabs>
-      ) : (
-        overview
-      )}
+      <Tabs
+        value={tab}
+        onValueChange={(t) =>
+          navigate({ search: t === "overview" ? {} : { tab: t as Tab }, replace: true, resetScroll: false })
+        }
+        className="space-y-6"
+      >
+        <TabsList className="research-tabs">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="changes">What changed</TabsTrigger>
+          <TabsTrigger value="signals">Signals</TabsTrigger>
+          <TabsTrigger value="news">News</TabsTrigger>
+          <TabsTrigger value="competitors">Competitors</TabsTrigger>
+          <TabsTrigger value="ask">Pulse AI</TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview" className="space-y-8">
+          {overview}
+        </TabsContent>
+        <TabsContent value="changes">
+          <RedlineView ticker={company.ticker} />
+        </TabsContent>
+        <TabsContent value="signals">
+          <SignalsPanel ticker={company.ticker} />
+        </TabsContent>
+        <TabsContent value="news">
+          <NewsPanel ticker={company.ticker} name={company.name} />
+        </TabsContent>
+        <TabsContent value="competitors">
+          <CompetitorComparison ticker={company.ticker} />
+        </TabsContent>
+        <TabsContent value="ask">
+          <AskPanel ticker={company.ticker} name={company.name} />
+        </TabsContent>
+      </Tabs>
 
       <p className="text-xs text-muted-foreground">
         All figures come from SEC XBRL company facts as filed, including amendments. Fourth-quarter and quarterly cash

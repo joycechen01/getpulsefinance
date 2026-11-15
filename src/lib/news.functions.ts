@@ -1,9 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export const getCompanyNews = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ ticker: z.string().trim().min(1).max(12).regex(/^[A-Za-z.-]+$/) }).parse(d))
   .handler(async ({ data }) => {
     const { fetchCompanyNews } = await import("./news.server");
