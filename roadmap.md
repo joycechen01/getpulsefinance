@@ -22,7 +22,7 @@
 - [x] Replace the company story operating-margin graph with a simple dated, cited timeline; verified six NVIDIA entries, expandable evidence and desktop/mobile.
 
 ## Follow-up plan (Nov 14)
-- [ ] Add Gmail-owner-only opt-in automatic earnings digests, no backfill, hourly bounded checks, duplicate protection and visible pause status; verify settings and job.
+- [x] Add Gmail-owner-only opt-in automatic earnings digests, no backfill, hourly bounded checks, duplicate protection and visible pause status; verified saved opt-in, real four-holding check with zero historical sends, last-check display, unsigned request rejection and 19 tests. Publish required for live scheduled route; opt-in left off.
 - [x] Competitor: select all, compact 3-per-row cards, stacked trend charts
 - [x] Replace Story timeline tab with News (Finnhub)
 - [x] Ask under key metrics on Overview; portfolio-wide Ask

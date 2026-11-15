@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { profileQuery } from "@/lib/profile";
 import {setEventMonitor} from "@/lib/phase5.functions";
-import { newsletterStatus, setNewsletter } from "@/lib/earnings-newsletter.functions";
+import { newsletterStatus, setNewsletter, resumeNewsletter } from "@/lib/earnings-newsletter.functions";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [
@@ -35,6 +35,7 @@ function SettingsPage() {
   const [newsletter, setNewsletterEnabled] = useState(false);
   const getNewsletterStatus = useServerFn(newsletterStatus);
   const saveNewsletter = useServerFn(setNewsletter);
+  const resume = useServerFn(resumeNewsletter);
   const { data: newsletterInfo, error: newsletterError } = useQuery({ queryKey: ["newsletter-status"], queryFn: () => getNewsletterStatus() });
   const [saving, setSaving] = useState(false);
   const monitor=useServerFn(setEventMonitor);
@@ -103,7 +104,7 @@ function SettingsPage() {
         Automatic earnings digests are available only to the connected Gmail account owner, checked hourly, and start with newly filed reports after opt-in. Manual delivery stays available from your portfolio. Audio is not enabled yet.
       </p>
       {newsletterError && <p role="alert" className="mt-3 text-sm text-muted-foreground">{newsletterError instanceof Error ? newsletterError.message : "Gmail availability could not be checked."}</p>}
-      {newsletterInfo?.pausedReason && <p role="alert" className="mt-3 text-sm text-muted-foreground">Automatic digests paused: {newsletterInfo.pausedReason}</p>}
+      {newsletterInfo?.pausedReason && <div className="mt-3 space-y-2"><p role="alert" className="text-sm text-muted-foreground">Automatic digests paused: {newsletterInfo.pausedReason} Resume only after the issue is resolved.</p><Button variant="outline" disabled={saving} onClick={async () => { setSaving(true); try { await resume(); await qc.invalidateQueries({ queryKey: ["newsletter-status"] }); toast.success("Automatic digests will resume at the next hourly check."); } catch (e) { toast.error(e instanceof Error ? e.message : "Could not resume digests."); } finally { setSaving(false); } }}>Resume automatic digests</Button></div>}
       {newsletterInfo?.lastChecked && <p className="mt-2 text-xs text-muted-foreground">Last earnings check: {new Date(newsletterInfo.lastChecked).toLocaleString()}</p>}
       <div className="mt-5 flex justify-end">
         <Button onClick={save} disabled={saving || !p}>

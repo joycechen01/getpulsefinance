@@ -24,3 +24,14 @@ export const setNewsletter = createServerFn({ method: "POST" }).middleware([requ
   const { error } = await context.supabase.from("profiles").update({ digest_newsletter_enabled: data.enabled }).eq("id", context.userId);
   if (error) throw error;
 });
+
+export const resumeNewsletter = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
+  const { gmail } = await import("./digest.server");
+  const mailbox = await gmail("profile");
+  const { data, error } = await context.supabase.auth.getUser();
+  if (error) throw error;
+  if (!mailbox.emailAddress || !mailboxOwner(data.user?.email, mailbox.emailAddress)) throw new Error("Only the connected Gmail owner can resume automatic digests.");
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { error: updateError } = await supabaseAdmin.from("earnings_digest_monitor").update({ paused_reason: null }).eq("user_id", context.userId);
+  if (updateError) throw updateError;
+});
