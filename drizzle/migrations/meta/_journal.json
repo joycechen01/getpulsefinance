@@ -43,6 +43,13 @@
       "when": 1794689704900,
       "tag": "0005_phase5_events_and_calls",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794702762070,
+      "tag": "0006_earnings_digest_opt_in",
+      "breakpoints": true
     }
   ]
 }

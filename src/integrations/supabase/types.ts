@@ -127,6 +127,41 @@ export type Database = {
         }
         Relationships: []
       }
+      earnings_digest_monitor: {
+        Row: {
+          cursor: number
+          last_checked_at: string | null
+          lease_token: string | null
+          lease_until: string | null
+          paused_reason: string | null
+          user_id: string
+        }
+        Insert: {
+          cursor?: number
+          last_checked_at?: string | null
+          lease_token?: string | null
+          lease_until?: string | null
+          paused_reason?: string | null
+          user_id: string
+        }
+        Update: {
+          cursor?: number
+          last_checked_at?: string | null
+          lease_token?: string | null
+          lease_until?: string | null
+          paused_reason?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "earnings_digest_monitor_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_deliveries: {
         Row: {
           accession: string
@@ -415,6 +450,8 @@ export type Database = {
           created_at: string
           delivery_email: string | null
           digest_email_enabled: boolean
+          digest_newsletter_enabled: boolean
+          digest_newsletter_since: string | null
           id: string
           material_event_email_enabled: boolean
           onboarded: boolean
@@ -425,6 +462,8 @@ export type Database = {
           created_at?: string
           delivery_email?: string | null
           digest_email_enabled?: boolean
+          digest_newsletter_enabled?: boolean
+          digest_newsletter_since?: string | null
           id: string
           material_event_email_enabled?: boolean
           onboarded?: boolean
@@ -435,6 +474,8 @@ export type Database = {
           created_at?: string
           delivery_email?: string | null
           digest_email_enabled?: boolean
+          digest_newsletter_enabled?: boolean
+          digest_newsletter_since?: string | null
           id?: string
           material_event_email_enabled?: boolean
           onboarded?: boolean
@@ -546,6 +587,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_earnings_digest_check: {
+        Args: { _token: string; _user_id: string }
+        Returns: boolean
+      }
       search_passages: {
         Args: { _cik: number; _limit?: number; _q: string }
         Returns: {
