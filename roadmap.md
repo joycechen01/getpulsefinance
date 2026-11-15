@@ -28,3 +28,5 @@
 - [x] Ask under key metrics on Overview; portfolio-wide Ask
 
 - [x] Format earnings emails as executive briefings; real signed-in NVIDIA preview, exact outgoing HTML, desktop/mobile layout, six metric source links and 19 delivery/rule tests verified; no email sent.
+
+- [ ] Match earnings email badges, heading typography and pulse logo to the website; verify embedded images and phone layout.

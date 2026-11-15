@@ -52,4 +52,4 @@ use the editor.
 - Typography uses one type scale in the "Type scale" block of `src/styles.css` (unlayered h1/h2/h3 rules override size utilities); add new sizes there instead of per-page overrides so headings stay consistent.
 - Portfolio CSV import parses in pure, tested `portfolio-csv.ts` (header detection, strict amounts, merged duplicate tickers) and saves rows one at a time through `addHolding`; missing position fields are omitted so an existing holding keeps its saved position.
 
-- Earnings email HTML and plain text share the pure digest formatter, existing email-theme tokens and cited content; table-based 600px layouts preserve mailbox compatibility without changing delivery or calculation logic.
+- Earnings email HTML and plain text share the pure digest formatter, website-matched email-theme tokens and cited content; table-based 600px layouts and CID-attached PNG logo/evidence icons preserve mailbox compatibility without changing delivery or calculation logic.
