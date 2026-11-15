@@ -26,3 +26,5 @@
 - [x] Competitor: select all, compact 3-per-row cards, stacked trend charts
 - [x] Replace Story timeline tab with News (Finnhub)
 - [x] Ask under key metrics on Overview; portfolio-wide Ask
+
+- [ ] Format earnings emails as executive briefings; verify financial evidence, desktop/mobile layout and delivery safeguards.
