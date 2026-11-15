@@ -27,4 +27,4 @@
 - [x] Replace Story timeline tab with News (Finnhub)
 - [x] Ask under key metrics on Overview; portfolio-wide Ask
 
-- [ ] Format earnings emails as executive briefings; verify financial evidence, desktop/mobile layout and delivery safeguards.
+- [x] Format earnings emails as executive briefings; real signed-in NVIDIA preview, exact outgoing HTML, desktop/mobile layout, six metric source links and 19 delivery/rule tests verified; no email sent.
