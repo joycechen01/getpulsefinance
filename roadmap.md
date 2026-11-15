@@ -29,4 +29,4 @@
 
 - [x] Format earnings emails as executive briefings; real signed-in NVIDIA preview, exact outgoing HTML, desktop/mobile layout, six metric source links and 19 delivery/rule tests verified; no email sent.
 
-- [ ] Match earnings email badges, heading typography and pulse logo to the website; verify embedded images and phone layout.
+- [x] Match earnings email badges, heading typography and pulse logo to the website; verified real NVIDIA HTML, embedded PNG email images, desktop/phone layout and 19 tests. Email clients may use font fallbacks; not published or resent.
