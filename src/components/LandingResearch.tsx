@@ -8,7 +8,7 @@ import { companyQuery } from "@/lib/edgar-queries";
 import { growth, latestWithYoY, series } from "@/lib/metrics";
 import { fmtChange, fmtValue } from "@/lib/metric-config";
 import { secDocUrl } from "@/lib/format";
-import { getChanges } from "@/lib/analysis.functions";
+import { getChangesPublic } from "@/lib/analysis.functions";
 import type { Change } from "@/lib/redline";
 import { useReveal } from "@/lib/use-reveal";
 import { cn } from "@/lib/utils";
@@ -75,7 +75,7 @@ const CHANGE_LABEL: Record<string, string> = { new: "New", expanded: "Expanded",
 function WhatChanged({ ticker }: { ticker: string }) {
   const { data } = useQuery({
     queryKey: ["landing-changes", ticker],
-    queryFn: () => getChanges({ data: { ticker } }),
+    queryFn: () => getChangesPublic({ data: { ticker } }),
     staleTime: 30 * 60 * 1000,
   });
   const reveal = useReveal();
