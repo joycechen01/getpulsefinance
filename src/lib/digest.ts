@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { EMAIL_IMAGES } from "./email-images";
 import { CALCULATED, valueOf, type Financials } from "./metrics";
 import type { SignalView } from "./analysis.functions";
 import { HEADLINE, fmtValue } from "./metric-config";
@@ -59,18 +60,24 @@ export function digestText(d:EarningsDigest) {
     "",DISCLAIMER,`Manage email preferences: ${APP_URL}/settings (turn off Earnings digest newsletter for automatic emails; Earnings digest emails for manual delivery).`,
   ].join("\n");
 }
-export const EMAIL_THEME={paper:"#F7F5F0",ink:"#0F1B2D",surface:"#FFFFFF",rule:"#E4E0D6",teal:"#1F6F78",secondary:"#5B6470"};
+export const EMAIL_THEME={paper:"#f8f4ec",ink:"#221811",surface:"#fdfbf7",rule:"#d8d0c3",teal:"#1a5439",secondary:"#6c6156",factBg:"#ede7db",calcBg:"#ece0cc",aiBg:"#eee5f0",aiInk:"#5a3a5e",displayFont:"Fraunces, Georgia, serif",bodyFont:"\'IBM Plex Sans\', Arial, sans-serif",figureFont:"\'IBM Plex Mono\', monospace"};
 const escapeHtml=(s:string)=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]??c));
-export function digestHtml(d:EarningsDigest){
+export function digestHtml(d:EarningsDigest, inlineImages = false){
   const t=EMAIL_THEME;
   const link=(url:string,label:string)=>`<a href="${escapeHtml(url)}" style="color:${t.teal};text-decoration:underline;overflow-wrap:anywhere">${escapeHtml(label)}</a>`;
-  const badge=(label:string)=>`<span style="font-size:12px;color:${t.secondary}">[${label}]</span>`;
-  const heading=(text:string)=>`<h2 style="margin:0 0 16px;font-family:Georgia,serif;font-size:20px;line-height:1.3;font-weight:500;color:${t.ink}">${escapeHtml(text)}</h2>`;
+  const image=(key:keyof typeof EMAIL_IMAGES)=>inlineImages?`cid:pulse-${key}`:`data:image/png;base64,${EMAIL_IMAGES[key]}`;
+  const badge=(label:string)=>{
+    const kind=label==="Calculated metric"?"calc":label==="AI interpretation"?"ai":"fact";
+    const bg=kind==="calc"?t.calcBg:kind==="ai"?t.aiBg:t.factBg;
+    const color=kind==="calc"?t.teal:kind==="ai"?t.aiInk:t.ink;
+    return `<span style="display:inline-block;padding:4px 8px;border-radius:4px;background:${bg};color:${color};font-family:${t.bodyFont};font-size:12px;line-height:18px;white-space:nowrap"><img src="${image(kind)}" width="12" height="12" alt="" style="display:inline-block;vertical-align:-1px;margin-right:4px;border:0">${escapeHtml(label)}</span>`;
+  };
+  const heading=(text:string)=>`<h2 style="margin:0 0 16px;font-family:${t.displayFont};font-size:24px;line-height:1.3;font-weight:500;color:${t.ink}">${escapeHtml(text)}</h2>`;
   const section=(content:string)=>`<tr><td class="content" style="padding:24px 32px;border-top:1px solid ${t.rule}">${content}</td></tr>`;
   const paragraph=(text:string)=>`<p style="margin:0 0 12px">${escapeHtml(text)}</p>`;
   const metrics=d.metrics.map(m=>`<tr>
     <th scope="row" style="padding:12px 0;border-bottom:1px solid ${t.rule};text-align:left;vertical-align:top;font-weight:400;width:58%">${escapeHtml(m.label)}<br>${badge(m.kind==="calc"?"Calculated metric":"Disclosed fact")}</th>
-    <td style="padding:12px 0 12px 12px;border-bottom:1px solid ${t.rule};text-align:right;vertical-align:top;font-size:18px;font-variant-numeric:tabular-nums">${escapeHtml(m.value)}<br><span style="font-size:12px">${link(d.filing.url,"SEC source")}</span></td></tr>`).join("");
+    <td style="padding:12px 0 12px 12px;border-bottom:1px solid ${t.rule};text-align:right;vertical-align:top;font-family:${t.figureFont};font-size:18px;font-variant-numeric:tabular-nums">${escapeHtml(m.value)}<br><span style="font-size:12px">${link(d.filing.url,"SEC source")}</span></td></tr>`).join("");
   const developments=d.developments.map((s,i)=>`<div style="${i?`border-top:1px solid ${t.rule};padding-top:20px;`:""}margin-bottom:20px">
     ${badge("AI interpretation")}<h3 style="margin:4px 0 12px;font-size:16px;line-height:1.4;font-weight:500">${i+1}. ${escapeHtml(s.title)}</h3>
     ${paragraph(s.what_happened)}
@@ -82,15 +89,15 @@ export function digestHtml(d:EarningsDigest){
     {title:"Management outlook",items:d.call.summary.outlook},
     {title:"Discussion topics",items:d.call.summary.topics},
     {title:"Call versus filing",items:d.call.summary.differences},
-  ].filter(g=>g.items.length).map(g=>`<h3 style="font-size:15px;font-weight:500;margin:20px 0 12px">${g.title}</h3>`+g.items.map(p=>`${badge("AI interpretation")}${paragraph(p.text)}<p style="font-size:12px;margin:0 0 16px">${callSources(d,p.refs).map(s=>link(s.url,s.label)).join("<br>")}</p>`).join("")).join("")+`<p style="font-size:13px;color:${t.secondary};margin:0">What remains uncertain: ${escapeHtml(d.call.summary.uncertain)}</p>`):"";
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(d.ticker)} earnings briefing · Pulse Finance</title><style>@media only screen and (max-width:620px){.outer{padding:12px 8px!important}.content{padding:20px 16px!important}}</style></head>
-  <body style="margin:0;padding:0;background:${t.paper};color:${t.ink};font-family:Arial,sans-serif;font-size:15px;line-height:1.6;letter-spacing:0">
+  ].filter(g=>g.items.length).map(g=>`<h3 style="font-size:15px;font-weight:500;margin:20px 0 12px">${g.title}</h3>`+g.items.map(p=>`${badge("AI interpretation")}${paragraph(p.text)}<p style="font-size:12px;margin:0 0 16px">${callSources(d,p.refs).map(s=>`${badge(s.label.startsWith("[Disclosed fact]")?"Disclosed fact":"Earnings call")} ${link(s.url,s.label.replace(/^\[[^\]]+\]\s*/,""))}`).join("<br>")}</p>`).join("")).join("")+`<p style="font-size:13px;color:${t.secondary};margin:0">What remains uncertain: ${escapeHtml(d.call.summary.uncertain)}</p>`):"";
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(d.ticker)} earnings briefing · Pulse Finance</title><style>@media only screen and (max-width:620px){.outer{padding:12px 8px!important}.content{padding:20px 16px!important}.email-title{font-size:32px!important}}</style></head>
+  <body style="margin:0;padding:0;background:${t.paper};color:${t.ink};font-family:${t.bodyFont};font-size:15px;line-height:1.6;letter-spacing:0">
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all">${escapeHtml(d.name)} · ${escapeHtml(d.period)}. Key financials, cited developments and research limitations.</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${t.paper}"><tr><td class="outer" align="center" style="padding:24px 12px">
   <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:${t.surface};border:1px solid ${t.rule};border-collapse:collapse;text-align:left">
-  <tr><td class="content" style="padding:24px 32px 20px;border-bottom:2px solid ${t.ink}"><p style="margin:0;font-size:17px;color:${t.ink}">Pulse Finance</p><p style="margin:4px 0 0;font-size:12px;color:${t.secondary}">Know what you own.</p></td></tr>
+  <tr><td class="content" style="padding:24px 32px 20px;border-bottom:2px solid ${t.ink}"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="vertical-align:middle"><img src="${image("logo")}" width="28" height="28" alt="Pulse Finance mark" style="display:block;border:0"></td><td style="padding-left:8px;vertical-align:middle;font-family:${t.bodyFont};font-size:18px;font-weight:500;line-height:1">Pulse Finance</td></tr></table><p style="margin:4px 0 0;font-size:12px;color:${t.secondary}">Know what you own.</p></td></tr>
   <tr><td class="content" style="padding:24px 32px"><p style="margin:0 0 8px;font-size:12px;color:${t.secondary}">Earnings briefing · ${escapeHtml(d.ticker)}</p>
-  <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:28px;line-height:1.25;font-weight:500;overflow-wrap:anywhere">${escapeHtml(d.name)}</h1>
+  <h1 class="email-title" style="margin:0 0 8px;font-family:${t.displayFont};font-size:40px;line-height:1.15;font-weight:500;overflow-wrap:anywhere">${escapeHtml(d.name)}</h1>
   <p style="margin:0 0 16px;font-size:18px">${escapeHtml(d.period)}</p><p style="margin:0;font-size:12px;color:${t.secondary}">${escapeHtml(d.filing.form)} filed ${formatDate(d.filing.filing_date)}${d.filing.report_date?`<br>Reporting period ended ${formatDate(d.filing.report_date)}`:""}<br>${link(d.filing.url,"Read the SEC filing")}</p></td></tr>
   ${section(heading("Financial snapshot")+`<table aria-label="Financial snapshot" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed">${metrics}</table>`)}
   ${section(heading("Developments to watch")+(developments||paragraph(reviewStatus(d))))}
@@ -104,6 +111,10 @@ export function rawDigestEmail(d:EarningsDigest,to:string,messageId:string) {
   const address=z.string().email().parse(to);
   const subject=`Pulse Finance — ${d.ticker} ${d.period} earnings digest`;
   const boundary="pulse_"+messageId.replace(/[^a-z0-9]/gi,"_");
-  const message=[`To: ${address}`,`Subject: =?UTF-8?B?${b64(subject)}?=`,`Message-ID: <${messageId}>`,"MIME-Version: 1.0",`Content-Type: multipart/alternative; boundary="${boundary}"`,"",`--${boundary}`,"Content-Type: text/plain; charset=UTF-8","",digestText(d),`--${boundary}`,"Content-Type: text/html; charset=UTF-8","",digestHtml(d),`--${boundary}--`].join("\r\n");
+  const relatedBoundary=boundary+"_related";
+  const attachments=Object.entries(EMAIL_IMAGES).flatMap(([key,data])=>[
+    `--${relatedBoundary}`,"Content-Type: image/png","Content-Transfer-Encoding: base64",`Content-ID: <pulse-${key}>`,`Content-Disposition: inline; filename="pulse-${key}.png"`,"",data.match(/.{1,76}/g)?.join("\r\n")??data,
+  ]);
+  const message=[`To: ${address}`,`Subject: =?UTF-8?B?${b64(subject)}?=`,`Message-ID: <${messageId}>`,"MIME-Version: 1.0",`Content-Type: multipart/alternative; boundary="${boundary}"`,"",`--${boundary}`,"Content-Type: text/plain; charset=UTF-8","",digestText(d),`--${boundary}`,`Content-Type: multipart/related; boundary="${relatedBoundary}"`,"",`--${relatedBoundary}`,"Content-Type: text/html; charset=UTF-8","",digestHtml(d,true),...attachments,`--${relatedBoundary}--`,`--${boundary}--`].join("\r\n");
   return b64(message).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 }
