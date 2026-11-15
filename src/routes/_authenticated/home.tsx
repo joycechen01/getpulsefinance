@@ -111,7 +111,7 @@ function Home() {
       >
         <TabsList className="research-tabs">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="ask">Ask</TabsTrigger>
+          <TabsTrigger value="ask">Pulse AI</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-8">
           <HoldingsTable rows={data.holdings} quotes={quotes.data} quotesLoading={quotes.isLoading} />
@@ -152,7 +152,7 @@ function Home() {
           {tickers.length > 0 ? (
             <AskPanel name="your holdings’ filings" />
           ) : (
-            <p className="text-sm text-muted-foreground">Add a holding to ask questions across your filings.</p>
+            <p className="text-sm text-muted-foreground">Add a holding to ask Pulse AI about your filings.</p>
           )}
         </TabsContent>
       </Tabs>
@@ -178,7 +178,7 @@ function HoldingsTable({
         <div>
           <h2 className="text-2xl">Holdings</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            Select a company to explore its metrics, filing changes, signals, competitors, news, and Ask.
+            Select a company to explore its metrics, filing changes, signals, competitors, news, and Pulse AI.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">

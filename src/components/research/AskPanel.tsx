@@ -53,7 +53,7 @@ export function AskPanel({ ticker, name }: { ticker?: string; name: string }) {
         }}
       >
         <label htmlFor={ticker ? "ask" : "ask-portfolio"} className="eyebrow block">
-          {ticker ? `Ask about ${name}’s filings` : `Ask across ${name}`}
+          {ticker ? `Ask Pulse AI about ${name}’s filings` : `Ask Pulse AI across ${name}`}
         </label>
         <Textarea
           id={ticker ? "ask" : "ask-portfolio"}

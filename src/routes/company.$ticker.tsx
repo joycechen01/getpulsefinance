@@ -164,7 +164,7 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
                   <div>
                     <h2 className="text-2xl">See the full picture with a free account</h2>
                     <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-                      Build a portfolio, monitor several companies side by side, see what changed between filings, get signals on material developments, ask questions with citations, explore trend charts and every
+                      Build a portfolio, monitor several companies side by side, see what changed between filings, get signals on material developments, ask Pulse AI questions with citations, explore trend charts and every
                       metric group (growth, profitability, cash, quality of earnings, balance sheet, per share).
                     </p>
                   </div>
@@ -225,7 +225,7 @@ function CompanyPage({ signedIn }: { signedIn: boolean }) {
             <TabsTrigger value="signals">Signals</TabsTrigger>
             <TabsTrigger value="news">News</TabsTrigger>
             <TabsTrigger value="competitors">Competitors</TabsTrigger>
-            <TabsTrigger value="ask">Ask</TabsTrigger>
+            <TabsTrigger value="ask">Pulse AI</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-8">
             {overview}
