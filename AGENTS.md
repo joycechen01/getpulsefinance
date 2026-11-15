@@ -49,3 +49,4 @@ use the editor.
 - Holdings quotes use an authenticated owner-scoped function and server-only Finnhub connector gateway helper; credentials stay in request headers, validated provider values preserve day changes and timestamps, and browser queries refresh every five minutes without durable worker state.
 - Company News uses an authenticated function and server-only Finnhub company-news helper with a short in-memory cache; headlines are labeled outside news, never SEC evidence or AI-rewritten.
 - Typography uses one type scale in the "Type scale" block of `src/styles.css` (unlayered h1/h2/h3 rules override size utilities); add new sizes there instead of per-page overrides so headings stay consistent.
+- Portfolio CSV import parses in pure, tested `portfolio-csv.ts` (header detection, strict amounts, merged duplicate tickers) and saves rows one at a time through `addHolding`; missing position fields are omitted so an existing holding keeps its saved position.

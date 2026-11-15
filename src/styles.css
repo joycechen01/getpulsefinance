@@ -233,7 +233,7 @@ main.max-w-7xl, main.max-w-6xl, header > .max-w-7xl { max-width: 1200px; }
 .research-tabs { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px 16px; width: 100%; height: auto; background: transparent; border-radius: 0; border-bottom: 1px solid var(--border); padding: 0; }
 .research-tabs > button { border-radius: 0; padding: 12px 4px; border-bottom: 2px solid transparent; background: transparent; font-size: 14px; }
 .research-tabs > button[data-state="active"] { color: var(--primary); border-bottom-color: var(--primary); background: transparent; }
-.editorial-research > section { border-top: 1px solid var(--foreground); border-bottom: 0; padding-top: 24px; }
+.editorial-research > section { min-width: 0; border-top: 1px solid var(--foreground); border-bottom: 0; padding-top: 24px; }
 .editorial-research h2 { margin-bottom: 8px; }
 .metric-groups > section { border: 0; border-radius: 0; border-top: 1px solid var(--foreground); background: transparent; padding: 24px 0 0; }
 @media (max-width: 767px) {

@@ -12,6 +12,7 @@ import { SharedRisksPanel } from "@/components/research/SharedRisksPanel";
 import { EarningsDigestPanel } from "@/components/research/EarningsDigestPanel";
 import { MaterialEventsPanel } from "@/components/research/MaterialEventsPanel";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { ImportHoldings } from "@/components/ImportHoldings";
 import { InfoTip } from "@/components/InfoTip";
 import { Sparkline } from "@/components/Sparkline";
 import { Button } from "@/components/ui/button";
@@ -88,13 +89,16 @@ function Home() {
           <div className="eyebrow">Your portfolio · {data.holdings.length} holdings</div>
           <h1 className="mt-1">Your portfolio</h1>
         </div>
-        <div className="w-full sm:w-80">
-          <CompanySearch onPick={onPick} placeholder="Add a holding…" />
-          {adding && (
-            <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Loader2 className="size-3 animate-spin" /> Fetching {adding} from SEC EDGAR…
-            </p>
-          )}
+        <div className="flex w-full items-start gap-2 sm:w-auto">
+          <div className="min-w-0 flex-1 sm:w-80 sm:flex-none">
+            <CompanySearch onPick={onPick} placeholder="Add a holding…" />
+            {adding && (
+              <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Loader2 className="size-3 animate-spin" /> Fetching {adding} from SEC EDGAR…
+              </p>
+            )}
+          </div>
+          <ImportHoldings held={tickers} className="h-11" />
         </div>
       </div>
 
@@ -111,7 +115,7 @@ function Home() {
         </TabsList>
         <TabsContent value="overview" className="space-y-8">
           <HoldingsTable rows={data.holdings} quotes={quotes.data} quotesLoading={quotes.isLoading} />
-          <div className="editorial-research grid items-start gap-8 lg:grid-cols-[3fr_2fr]">
+          <div className="editorial-research grid items-start gap-6 md:grid-cols-2 lg:gap-8">
             <EarningsDigestPanel tickers={tickers} />
             <MaterialEventsPanel tickers={tickers} />
           </div>

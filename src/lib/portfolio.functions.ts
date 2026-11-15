@@ -23,14 +23,15 @@ async function addOne(
   const match = await findTicker(ticker);
   if (!match) return { ok: false as const, ticker, error: `“${ticker.toUpperCase()}” isn’t an SEC-registered ticker.` };
   await ensureCompany(match.cik, match.ticker, match.name);
+  // Position fields are only written when supplied, so re-adding a held ticker keeps its saved position.
   const { error } = await supabase.from("holdings").upsert(
     {
       user_id: userId,
       ticker: match.ticker,
       cik: match.cik,
       company_name: match.name,
-      shares: extra.shares ?? null,
-      avg_price: extra.avgPrice ?? null,
+      ...(extra.shares !== undefined && { shares: extra.shares }),
+      ...(extra.avgPrice !== undefined && { avg_price: extra.avgPrice }),
     },
     { onConflict: "user_id,ticker" },
   );

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { CompanySearch } from "@/components/CompanySearch";
+import { ImportHoldings } from "@/components/ImportHoldings";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { portfolioQuery } from "@/lib/edgar-queries";
@@ -68,7 +69,8 @@ function Onboarding() {
       <div className="mt-6">
         <CompanySearch onPick={onPick} placeholder="Add a ticker or company name…" />
       </div>
-      <div className="mt-4 flex items-center gap-3">
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <ImportHoldings held={holdings.map((h) => h.ticker)} />
         <Button variant="outline" onClick={loadDemo} disabled={!!busy}>
           {busy === "demo" ? <Loader2 className="animate-spin" /> : <Sparkles />} Load demo portfolio
         </Button>
