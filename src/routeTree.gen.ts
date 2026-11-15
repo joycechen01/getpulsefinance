@@ -16,6 +16,7 @@ import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/h
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as CompanyTickerRouteImport } from './routes/company.$ticker'
+import { Route as ApiPublicJobsEarningsDigestsRouteImport } from './routes/api/public/jobs/earnings-digests'
 import { Route as ApiPublicJobsMaterialEventsRouteImport } from './routes/api/public/jobs/material-events'
 
 const IndexRoute = IndexRouteImport.update({
@@ -52,6 +53,12 @@ const CompanyTickerRoute = CompanyTickerRouteImport.update({
   path: '/company/$ticker',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicJobsEarningsDigestsRoute =
+  ApiPublicJobsEarningsDigestsRouteImport.update({
+    id: '/api/public/jobs/earnings-digests',
+    path: '/api/public/jobs/earnings-digests',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicJobsMaterialEventsRoute =
   ApiPublicJobsMaterialEventsRouteImport.update({
     id: '/api/public/jobs/material-events',
@@ -66,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/company/$ticker': typeof CompanyTickerRoute
+  '/api/public/jobs/earnings-digests': typeof ApiPublicJobsEarningsDigestsRoute
   '/api/public/jobs/material-events': typeof ApiPublicJobsMaterialEventsRoute
 }
 export interface FileRoutesByTo {
@@ -75,6 +83,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/company/$ticker': typeof CompanyTickerRoute
+  '/api/public/jobs/earnings-digests': typeof ApiPublicJobsEarningsDigestsRoute
   '/api/public/jobs/material-events': typeof ApiPublicJobsMaterialEventsRoute
 }
 export interface FileRoutesById {
@@ -86,6 +95,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/company/$ticker': typeof CompanyTickerRoute
+  '/api/public/jobs/earnings-digests': typeof ApiPublicJobsEarningsDigestsRoute
   '/api/public/jobs/material-events': typeof ApiPublicJobsMaterialEventsRoute
 }
 export interface FileRouteTypes {
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/settings'
     | '/company/$ticker'
+    | '/api/public/jobs/earnings-digests'
     | '/api/public/jobs/material-events'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/settings'
     | '/company/$ticker'
+    | '/api/public/jobs/earnings-digests'
     | '/api/public/jobs/material-events'
   id:
     | '__root__'
@@ -116,6 +128,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/settings'
     | '/company/$ticker'
+    | '/api/public/jobs/earnings-digests'
     | '/api/public/jobs/material-events'
   fileRoutesById: FileRoutesById
 }
@@ -124,6 +137,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CompanyTickerRoute: typeof CompanyTickerRoute
+  ApiPublicJobsEarningsDigestsRoute: typeof ApiPublicJobsEarningsDigestsRoute
   ApiPublicJobsMaterialEventsRoute: typeof ApiPublicJobsMaterialEventsRoute
 }
 
@@ -178,6 +192,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyTickerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/jobs/earnings-digests': {
+      id: '/api/public/jobs/earnings-digests'
+      path: '/api/public/jobs/earnings-digests'
+      fullPath: '/api/public/jobs/earnings-digests'
+      preLoaderRoute: typeof ApiPublicJobsEarningsDigestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/jobs/material-events': {
       id: '/api/public/jobs/material-events'
       path: '/api/public/jobs/material-events'
@@ -208,6 +229,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CompanyTickerRoute: CompanyTickerRoute,
+  ApiPublicJobsEarningsDigestsRoute: ApiPublicJobsEarningsDigestsRoute,
   ApiPublicJobsMaterialEventsRoute: ApiPublicJobsMaterialEventsRoute,
 }
 export const routeTree = rootRouteImport

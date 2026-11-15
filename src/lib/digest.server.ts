@@ -7,7 +7,7 @@ import type { Financials } from "./metrics";
 import { signalViews } from "./analysis.functions";
 import { secDocUrl } from "./format";
 
-export async function buildDigest(ticker:string):Promise<EarningsDigest> {
+export async function buildDigest(ticker:string, background = false):Promise<EarningsDigest> {
   const match=await findTicker(ticker);
   if(!match)throw new Error("No SEC-registered ticker found.");
   await ensureCompany(match.cik,match.ticker,match.name);
@@ -20,7 +20,7 @@ export async function buildDigest(ticker:string):Promise<EarningsDigest> {
   const fin=fact?.data as unknown as Financials|null;
   const filing={...f,url:secDocUrl(match.cik,f.accession,f.primary_document)};
   let reviewComplete=false;
-  try{const r=await ensureSignals(match.cik,match.name,fin);reviewComplete=r.analyzed;}catch(e){console.error("Digest developments unavailable",e);}
+  try{const r=await ensureSignals(match.cik,match.name,fin,background);reviewComplete=r.analyzed;}catch(e){if(background)throw e;console.error("Digest developments unavailable",e);}
   const all=await signalViews(supabaseAdmin,[match.cik],new Map([[match.cik,match.ticker]]));
   const {transcriptQuarter}=await import("./phase5");
   const quarter=fin?transcriptQuarter(fin,f.report_date):null;
