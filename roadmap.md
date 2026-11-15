@@ -26,3 +26,5 @@
 - [x] Competitor: select all, compact 3-per-row cards, stacked trend charts
 - [x] Replace Story timeline tab with News (Finnhub)
 - [x] Ask under key metrics on Overview; portfolio-wide Ask
+
+- [x] Format earnings emails as executive briefings; real signed-in NVIDIA preview, exact outgoing HTML, desktop/mobile layout, six metric source links and 19 delivery/rule tests verified; no email sent.
