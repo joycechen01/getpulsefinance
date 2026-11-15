@@ -160,7 +160,7 @@ Rules:
 - metric_note: if a provided metric supports or contradicts the signal, state it in one sentence with the exact numbers; otherwise null.
 - At most 6 signals, most material first.`;
 
-export async function ensureSignals(cik: number, companyName: string, fin: Financials | null) {
+export async function ensureSignals(cik: number, companyName: string, fin: Financials | null, background = false) {
   const filings = await listFilings(cik);
   const pair = pickComparable(filings);
   const cur = pair?.cur ?? filings.find((f) => f.form === "10-K" || f.form === "10-Q");
@@ -213,7 +213,7 @@ ${metricContext(fin)}
 Passages:
 ${refs.map((r) => r.text).join("\n\n") || "(no passages extracted)"}`;
 
-  const out = refs.length ? await aiObject(SignalSchema, SIGNAL_INSTRUCTIONS, prompt) : { signals: [] };
+  const out = refs.length ? await aiObject(SignalSchema, SIGNAL_INSTRUCTIONS, prompt, background) : { signals: [] };
   const refMap = new Map(refs.map((r) => [r.ref, r.id]));
   const rows = out.signals
     .slice(0, 6)

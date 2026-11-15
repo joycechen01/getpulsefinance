@@ -43,13 +43,14 @@ function friendly(e: unknown): AiError {
 }
 
 /** Structured output with a strict schema; streamed and consumed server-side. */
-export async function aiObject<T>(schema: z.ZodType<T>, instructions: string, prompt: string): Promise<T> {
+export async function aiObject<T>(schema: z.ZodType<T>, instructions: string, prompt: string, background = false): Promise<T> {
   try {
     const result = streamText({
       model: provider().responses(MODEL),
       instructions,
       prompt,
       output: Output.object({ schema }),
+      ...(background ? { maxRetries: 0 } : {}),
       providerOptions: {
         openai: {
           store: false,
